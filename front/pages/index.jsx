@@ -16,6 +16,8 @@ export default class Home extends React.Component {
 
     if (name) {
       this.client = new GameClient();
+      this.client.setName(name);
+      this.client.setCharacter(character);
       this.client.connect('http://0.0.0.0:3333');
 
       this.renderer = new GameRenderer();
@@ -48,7 +50,7 @@ export default class Home extends React.Component {
     const { initialize } = this.state;
     return (
       <div ref='main' className="main">
-        <Head title="Home" />
+        <Head />
         {
           !initialize &&
           <LoginCard generate={this.generate} setName={this.setName} setCharacter={this.setCharacter} />

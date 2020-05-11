@@ -8,6 +8,7 @@ export default class LoginCard extends React.Component {
             <Card
                 style={{ margin: 'auto', width: '300px', boxShadow: '0px 6px 6px 0px rgba(0, 0, 0, 0.3)', display: 'inline-block' }}
                 cover={<img
+                    height="171px"
                     alt="logo"
                     src="/logo.jpeg"
                 />}
@@ -57,17 +58,18 @@ export default class LoginCard extends React.Component {
                                         </div >
                                     </Radio.Button>
 
-                                    <Input placeholder="닉네임을 입력해 주세요!." allowClear prefix={<UserOutlined style={{ marginRight: '4px' }} />} style={{ marginTop: '10px' }} onChange={setName} />
+                                    <Input placeholder="Insert Your Name" allowClear prefix={<UserOutlined style={{ marginRight: '4px' }} />} style={{ marginTop: '10px' }} onChange={setName} />
                                 </div>
                             </Radio.Group>
                         </div>
                     }
                 />
-                <div style={{ position: 'absolute', top: '0', left: '0' }}>
+                <div style={{ position: 'absolute', top: '144px', left: '0' }}>
                     <Tag color="magenta" style={{ margin: "2px" }}>Smart Study</Tag>
                     <Tag color="magenta" style={{ margin: "2px" }}>Quiz</Tag>
                     <Tag color="magenta" style={{ margin: "2px" }}>Game</Tag>
                 </div>
+                <img style={{ position: 'absolute', top: '10px', left: '5%', width: "90%", backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '10px', paddingTop: '5px', paddingBottom: '5px' }} src="./company_logo.png" />
             </Card>
         );
     }

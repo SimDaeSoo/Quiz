@@ -30,4 +30,12 @@ export default class GameClient {
         this.socket.disconnect();
         this.socket = undefined;
     }
+
+    setName(name) {
+        this.name = name;
+    }
+
+    setCharacter(character) {
+        this.character = character;
+    }
 }

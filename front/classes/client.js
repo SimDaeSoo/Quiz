@@ -19,6 +19,15 @@ export default class GameClient {
     }
 
     disconnected() {
-        console.log('disconnected');
+        console.log('disconneted');
+    }
+
+    setRenderer(renderer) {
+        this.renderer = renderer;
+    }
+
+    destroy() {
+        this.socket.disconnect();
+        this.socket = undefined;
     }
 }

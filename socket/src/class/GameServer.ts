@@ -33,8 +33,7 @@ class GameServer {
         });
     }
 
-    private routing(): void {
-    }
+    private routing(): void { }
 
     public open(port: number): void {
         this.port = port;
@@ -56,19 +55,17 @@ class GameServer {
     private createSocketServer(): void {
         try {
             this.io = SocketIO(this.server, { serveClient: false });
-            this.io.on('connection', (socket: SocketIO.Socket): void => { this.connection(socket); });
+            this.io.on('connection', (socket: SocketIO.Socket): void => { this.connect(socket); });
         } catch (error) {
             console.log(error);
         }
     }
 
-    private connection(socket: SocketIO.Socket): void {
-        console.log(socket.id, 'connected');
+    private connect(socket: SocketIO.Socket): void {
         socket.on('disconnect', (): void => { this.disconnect(socket); });
     }
 
     private disconnect(socket: SocketIO.Socket): void {
-        console.log(socket.id, 'disconnected');
     }
 
     public close(): void {

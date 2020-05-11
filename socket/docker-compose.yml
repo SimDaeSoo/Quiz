@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  back:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-dev
+    command: sh /start-dev.sh
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 3030:3030
+    volumes:
+      - ./:/home/service/back/
+      - node_modules:/home/service/back/node_modules/
+
+volumes:
+  node_modules:

@@ -1,7 +1,8 @@
 import NextHead from 'next/head';
 import { string } from 'prop-types';
 
-const defaultDescription = '';
+const defaultTitle = 'Quiz';
+const defaultDescription = 'for smart study year-end events page';
 const defaultKeywords = '';
 const defaultOGURL = '';
 const defaultOGImage = '';
@@ -9,11 +10,11 @@ const defaultOGImage = '';
 const Head = (props) => (
   <NextHead>
     <meta charSet="UTF-8" />
-    <title>{props.title || ''}</title>
+    <title>{props.title || defaultTitle}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={props.description || defaultDescription} />
     <meta name="keywords" content={props.keywords || defaultKeywords} />
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png" />
     <link rel="shortcut icon" href="/static/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />

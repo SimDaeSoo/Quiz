@@ -34,7 +34,7 @@ export default class GameRenderer {
 
         this.generateMap();
 
-        this.app.stage.on('click', (e) => {
+        this.app.stage.on('pointerdown', (e) => {
             this.logic.socket.emit('touch', {
                 x: e.data.global.x,
                 y: e.data.global.y
@@ -83,8 +83,8 @@ export default class GameRenderer {
 
     updateOBJ() {
         for (let key in this.objs) {
-            this.objs[key].x = this.logic.users[key].position.x;
-            this.objs[key].y = this.logic.users[key].position.y;
+            this.objs[key].x = this.logic.users[key].renderPosition.x;
+            this.objs[key].y = this.logic.users[key].renderPosition.y;
         }
     }
 

@@ -47,8 +47,7 @@ services:
     command: sh /start-dev.sh
     environment:
       - NODE_ENV=development
-      - BASE_SSR_API_URL=http://back:1337
-      - BASE_CSR_API_URL=/api
+      - SOCKET_ADDRESS=http://0.0.0.0:3333
     ports:
       - 3000:3000
     volumes:

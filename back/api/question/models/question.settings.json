@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "questions",
+  "info": {
+    "name": "Question"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "content": {
+      "type": "text"
+    },
+    "score": {
+      "type": "integer",
+      "default": 1
+    },
+    "answer_list": {
+      "collection": "answer",
+      "via": "questions",
+      "dominant": true
+    },
+    "answer": {
+      "model": "answer"
+    },
+    "quiz": {
+      "via": "questions",
+      "model": "quiz"
+    }
+  }
+}

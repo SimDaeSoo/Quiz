@@ -8,6 +8,9 @@ services:
     command: sh /start-dev.sh
     environment:
       - NODE_ENV=development
+      - SERVER_ADDRESS=http://10.200.20.119
+      - AUTH_IDENTIFIER=daesoo94
+      - AUTH_PASSWORD=vndtkstla2
     ports:
       - 3333:3333
     volumes:

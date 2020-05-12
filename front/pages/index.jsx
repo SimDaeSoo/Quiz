@@ -17,7 +17,7 @@ export default class Home extends React.Component {
   }
 
   async initialize() {
-    const SOCKET_ADDRESS = 'http://0.0.0.0:3333';
+    const { SOCKET_ADDRESS } = this.props;
     this.client = new GameClient();
     this.client.setStateCallback((state) => { this.setState(state); });
     await this.client.cetrification();
@@ -88,3 +88,7 @@ export default class Home extends React.Component {
     );
   }
 }
+
+export async function getServerSideProps(context) {
+  return { props: { SOCKET_ADDRESS: process.env.SOCKET_ADDRESS } };
+} 

@@ -2,7 +2,7 @@ import GameServer from './class/GameServer';
 
 async function start(): Promise<void> {
     const server: GameServer = new GameServer();
-    await server.certification('daesoo94', 'vndtkstla2');
+    await server.certification(process.env.AUTH_IDENTIFIER, process.env.AUTH_PASSWORD);
     await server.initialize();
     server.open(3333);
 }

@@ -79,9 +79,8 @@ class GameServer {
     }
 
     public async certification(identifier: string, password: string): Promise<void> {
-        const SERVER_ADDRESS: string = 'http://10.200.20.119';
         try {
-            const response: AxiosResponse<Auth> = await axios.post(`${SERVER_ADDRESS}/api/auth/local`, { identifier, password });
+            const response: AxiosResponse<Auth> = await axios.post(`${process.env.SERVER_ADDRESS}/api/auth/local`, { identifier, password });
             const auth: Auth = response.data;
             this.token = auth.jwt;
             console.log(`[${new Date}] Certification Success : ${this.token}`);

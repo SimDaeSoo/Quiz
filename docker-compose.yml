@@ -47,7 +47,7 @@ services:
     command: sh /start-dev.sh
     environment:
       - NODE_ENV=development
-      - SOCKET_ADDRESS=http://0.0.0.0:3333
+      - SOCKET_ADDRESS=http://10.200.20.119:3333
     ports:
       - 3000:3000
     volumes:

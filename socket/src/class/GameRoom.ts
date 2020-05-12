@@ -38,14 +38,14 @@ class GameRoom {
 
     public reConnect(socket: SocketIO.Socket, token: string): void {
         socket.join(this.id.toString());
-        this.userDictionary[token].socket = socket;
+        this.userDictionary[token].reConnect(socket);
     }
 
     public join(socket: SocketIO.Socket, client: ClientImportData): void {
         socket.join(this.id.toString());
         this.userDictionary[client.token] = new Client(socket, client);
         this.userDictionary[client.token].server = this.server;
-        this.server.emit('createUser', this.userDictionary[client.token].export);
+        this.server.emit('createObject', this.userDictionary[client.token].export);
     }
 
     public leave(socket: SocketIO.Socket): void {

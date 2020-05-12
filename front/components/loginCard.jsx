@@ -73,7 +73,7 @@ export default class LoginCard extends React.Component {
                     <Tag color="magenta" style={{ margin: "2px" }}>#Quiz</Tag>
                     <Tag color="magenta" style={{ margin: "2px" }}>#Events</Tag>
                 </div>
-                <img style={{ position: 'absolute', top: '5px', left: '5%', width: "90%", backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '10px', paddingTop: '5px', paddingBottom: '5px' }} src="./company_logo.png" />
+                <img style={{ position: 'absolute', top: '5px', left: '5%', width: "90%", padding: '10px' }} src="./company_logo.png" />
                 <Tag color="gold" style={{ position: 'absolute', top: '-25px', right: '-2px', height: '20px', fontSize: '0.8em', margin: 0 }}>User Unique ID / {token}</Tag>
             </Card>
         );

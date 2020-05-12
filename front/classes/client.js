@@ -19,6 +19,8 @@ export default class GameClient {
         this.socket.on('disconnect', this.disconnected.bind(this));
         this.socket.on('_pong', this.pong.bind(this));
         this.socket.on('joinedRoom', this.joinedRoom.bind(this));
+        this.socket.on('setObjectState', this.setObjectState.bind(this));
+        this.socket.on('createObject', this.createObject.bind(this));
         this.socket.emit('_ping', Date.now());
         return this.socket;
     }
@@ -67,7 +69,9 @@ export default class GameClient {
     }
 
     disconnected() {
+        this.rendering = false;
         this.renderer.destroy();
+        this.logic.destroy();
         const mainState = STATE.LOGIN;
         this.setState({
             connected: false,
@@ -111,18 +115,25 @@ export default class GameClient {
             mainState
         });
         this.renderer = new GameRenderer();
+        this.renderer.setLogic(this.logic);
         this.renderer.initialize({
             el: this.renderElements
         });
-        this.renderer.setLogic(this.logic);
-        requestAnimationFrame(() => {
-            this.renderer.render();
-        });
+        this.renderer.setTarget(this.token);
+
+        this.rendering = true;
+        const render = () => {
+            if (this.rendering) {
+                this.renderer.render();
+                requestAnimationFrame(render);
+            }
+        }
+        render();
     }
 
     intialize(room) {
         this.logic = new Logic();
-        this.logic.initialize(room);
+        this.logic.initialize(this.socket, room);
         this.logic.start();
     }
 
@@ -132,5 +143,17 @@ export default class GameClient {
             name: this.name,
             character: this.character
         });
+    }
+
+    setObjectState(data) {
+        if (this.logic) {
+            this.logic.setState(data);
+        }
+    }
+
+    createObject(data) {
+        if (this.logic) {
+            this.logic.createObject(data);
+        }
     }
 }

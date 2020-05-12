@@ -10,5 +10,9 @@ export default interface ClientExportData {
         x: number;
         y: number;
     };
+    targetPosition: {
+        x: number;
+        y: number;
+    }
     score: number;
 };

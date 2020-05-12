@@ -1,3 +1,5 @@
+import Camera from './camera';
+
 export default class GameRenderer {
     initialize(options) {
         this.PIXI = require('pixi.js');
@@ -34,10 +36,16 @@ export default class GameRenderer {
 
         this.generateMap();
 
+        this.camera = new Camera();
+        this.camera.setStage(this.stage);
+        this.camera.setZoom(0.5);
+
         this.app.stage.on('pointerdown', (e) => {
+            const diffX = (-this.stage.x + e.data.global.x) / this.camera.currentZoom;
+            const diffY = (-this.stage.y + e.data.global.y) / this.camera.currentZoom;
             this.logic.socket.emit('touch', {
-                x: e.data.global.x,
-                y: e.data.global.y
+                x: diffX,
+                y: diffY
             });
         });
     }
@@ -54,6 +62,10 @@ export default class GameRenderer {
         this.generateOBJ();
         this.destroyOBJ();
         this.updateOBJ();
+        if (this.target && !this.camera.targetObject) {
+            this.camera.setObject(this.objs[this.target]);
+        }
+        this.camera.update();
         this.app.render();
     }
 

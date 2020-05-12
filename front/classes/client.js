@@ -26,7 +26,7 @@ export default class GameClient {
     }
 
     async cetrification() {
-        if (!localStorage.IDENTIFY_TOKEN) {
+        if (!localStorage.IDENTIFY_TOKEN || localStorage.IDENTIFY_TOKEN === 'undefined') {
             const response = await fetch(`/api/tokens`, {
                 method: 'post',
                 headers: {
@@ -34,7 +34,9 @@ export default class GameClient {
                 }
             });
             const token = await response.json();
-            localStorage.IDENTIFY_TOKEN = token.id;
+            if (token.id) {
+                localStorage.IDENTIFY_TOKEN = token.id;
+            }
         }
         this.token = localStorage.IDENTIFY_TOKEN;
         this.setState({
@@ -44,11 +46,19 @@ export default class GameClient {
 
     pong(dt) {
         const ping = Date.now() - dt;
+        let fps = 0;
+        let ups = 0;
+        if (this.renderer && this.renderer.fps) {
+            fps = this.renderer.fps
+        }
+        if (this.logic && this.logic.ups) {
+            ups = this.logic.ups
+        }
         setTimeout(() => {
             this.socket.emit('_ping', Date.now());
         }, 2000);
         this.setState({
-            ping
+            ping, fps, ups
         });
     }
 
@@ -72,9 +82,13 @@ export default class GameClient {
         this.rendering = false;
         this.renderer.destroy();
         this.logic.destroy();
+        this.renderer.fps = 0;
+        this.logic.ups = 0;
         const mainState = STATE.LOGIN;
         this.setState({
             connected: false,
+            ups: 0,
+            fps: 0,
             mainState
         });
         message.error('Server disconnected');
@@ -154,6 +168,22 @@ export default class GameClient {
     createObject(data) {
         if (this.logic) {
             this.logic.createObject(data);
+        }
+    }
+
+    zoomUp() {
+        if (this.renderer.camera.targetZoom <= 1.9) {
+            this.renderer.camera.setZoom(this.renderer.camera.targetZoom + 0.1)
+        } else {
+            this.renderer.camera.setZoom(2);
+        }
+    }
+
+    zoomDown() {
+        if (this.renderer.camera.targetZoom >= 0.3) {
+            this.renderer.camera.setZoom(this.renderer.camera.targetZoom - 0.1)
+        } else {
+            this.renderer.camera.setZoom(0.2);
         }
     }
 }

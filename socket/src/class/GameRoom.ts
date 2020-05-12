@@ -10,7 +10,7 @@ class GameRoom {
     public quizID: string;
     public id: number;
     public owner: string;
-    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 1000, ey: 1000 };
+    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 1500, ey: 750 };
     public userDictionary: Dictionary<Client> = {};
     public logic: GameLogic = new GameLogic();
 

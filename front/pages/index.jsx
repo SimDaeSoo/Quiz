@@ -3,7 +3,7 @@ import Head from '../components/head';
 import GameClient from '../classes/client';
 import LoginCard from '../components/loginCard';
 import CreateRoomCard from '../components/createRoomCard';
-import { message } from 'antd';
+import { message, Button } from 'antd';
 import { ApiOutlined } from '@ant-design/icons';
 
 const STATE = {
@@ -77,17 +77,38 @@ export default class Home extends React.Component {
     this.setState({ character });
   }
 
+  zoomUp = () => {
+    this.client.zoomUp();
+  }
+
+  zoomDown = () => {
+    this.client.zoomDown();
+  }
+
   render() {
-    const { connected, ping, token, mainState } = this.state;
+    const { connected, ping, token, mainState, fps, ups } = this.state;
     return (
       <div ref='main' className="main">
         <Head />
-        <div style={{ fontSize: '0.5em', position: 'absolute', left: '4px', top: connected ? '4px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+        <div style={{ fontSize: '0.7em', position: 'absolute', left: '4px', top: connected ? '4px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
           Ping {ping} ms
+        </div>
+        <div style={{ fontSize: '0.7em', position: 'absolute', left: '4px', top: fps ? '24px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'deepskyblue', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+          {fps} FPS
+        </div>
+        <div style={{ fontSize: '0.7em', position: 'absolute', left: '4px', top: ups ? '44px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'coral', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+          {ups} UPS
         </div>
         <div style={{ position: 'absolute', right: '4px', bottom: '5px', height: '22px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'background-color 0.3s' }}>
           <ApiOutlined /> {connected ? 'Connected' : 'Disconnected'}
         </div>
+        {
+          mainState === STATE.JOIN_ROOM &&
+          <div style={{ position: 'absolute', top: 0, right: 0 }}>
+            <Button type='primary' style={{ margin: '2px' }} onClick={this.zoomUp}>+</Button>
+            <Button type='primary' style={{ margin: '2px' }} onClick={this.zoomDown}>-</Button>
+          </div>
+        }
 
         {
           mainState === STATE.LOGIN &&

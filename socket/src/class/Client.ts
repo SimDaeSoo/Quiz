@@ -8,7 +8,7 @@ class Client {
     public token: string;
     public name: string;
     public character: string;
-    public position: { x: number, y: number } = { x: 0, y: 0 };
+    public position: { x: number, y: number } = { x: 50, y: 50 };
     public targetPosition: { x: number, y: number } = { x: 0, y: 0 };
     public vector: { x: number, y: number } = { x: 0, y: 0 };
     public score: number = 0;
@@ -46,7 +46,7 @@ class Client {
     }
 
     public touch(position: { x: number, y: number }): void {
-        const SPEED: number = 0.2;
+        const SPEED: number = 0.3;
         const diffX: number = position.x - this.position.x;
         const diffY: number = position.y - this.position.y;
         this.vector.x = SPEED * Math.cos(Math.atan2(diffY, diffX));

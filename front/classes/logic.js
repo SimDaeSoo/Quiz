@@ -20,14 +20,27 @@ class Logic {
     }
 
     start() {
-        this.updater.on('update', 16, this.update.bind(this));
+        this.updater.on('update', 12, this.update.bind(this));
     }
 
     update(dt) {
+        if (this.lastUpdated === undefined) {
+            this.lastUpdated = Date.now();
+            this.updateCount = 0;
+        }
+
         for (let key in this.users) {
             const user = this.users[key];
             user.update(dt);
             this.test += dt;
+        }
+
+        if (this.lastUpdated + 1000 <= Date.now()) {
+            this.ups = this.updateCount;
+            this.updateCount = 0;
+            this.lastUpdated = Date.now();
+        } else {
+            this.updateCount++;
         }
     }
 

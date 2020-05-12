@@ -1,29 +1,31 @@
 import Camera from './camera';
+import UserRenderingObject from './userRendereringObject';
+const PIXI = typeof window !== 'undefined' ? require('pixi.js') : {};
 
 export default class GameRenderer {
     initialize(options) {
-        this.PIXI = require('pixi.js');
         if (this.app) this.destroy();
 
-        this.PIXI.settings.SCALE_MODE = this.PIXI.SCALE_MODES.NEAREST;
-        this.PIXI.settings.ROUND_PIXELS = true;
+        // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+        // PIXI.settings.ROUND_PIXELS = true;
 
-        this.app = new this.PIXI.Application({
+        this.app = new PIXI.Application({
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: 0x000000,
+            backgroundColor: 0xFFFFFF,
             autoStart: false,
-            antialias: false,
+            antialias: true,
             sharedLoader: true,
             powerPreference: 'high-performance',
             resizeTo: options.el
         });
 
-        this.stage = new this.PIXI.Container();
+        this.stage = new PIXI.Container();
 
-        this.groundLayer = new this.PIXI.Container();
-        this.playerLayer = new this.PIXI.Container();
-        this.effectLayer = new this.PIXI.Container();
+        this.groundLayer = new PIXI.Container();
+        this.playerLayer = new PIXI.Container();
+        this.effectLayer = new PIXI.Container();
+        this.playerLayer.sortableChildren = true;
         this.stage.addChild(this.groundLayer);
         this.stage.addChild(this.playerLayer);
         this.stage.addChild(this.effectLayer);
@@ -38,20 +40,26 @@ export default class GameRenderer {
 
         this.camera = new Camera();
         this.camera.setStage(this.stage);
-        this.camera.setZoom(0.5);
+        this.camera.setZoom(0.7);
 
+        this.canTouch = true;
         this.app.stage.on('pointerdown', (e) => {
-            const diffX = (-this.stage.x + e.data.global.x) / this.camera.currentZoom;
-            const diffY = (-this.stage.y + e.data.global.y) / this.camera.currentZoom;
-            this.logic.socket.emit('touch', {
-                x: diffX,
-                y: diffY
-            });
+            if (this.canTouch) {
+                this.canTouch = false;
+                const diffX = (-this.stage.x + e.data.global.x) / this.camera.currentZoom;
+                const diffY = (-this.stage.y + e.data.global.y) / this.camera.currentZoom;
+                this.logic.socket.emit('touch', {
+                    x: diffX,
+                    y: diffY
+                });
+
+                setTimeout(() => { this.canTouch = true; }, 200);
+            }
         });
     }
 
     generateMap() {
-        const graphics = new this.PIXI.Graphics();
+        const graphics = new PIXI.Graphics();
         graphics.beginFill(0xDE3249);
         graphics.drawRect(this.logic.map.sx, this.logic.map.sy, this.logic.map.ex, this.logic.map.ey);
         graphics.endFill();
@@ -59,6 +67,10 @@ export default class GameRenderer {
     }
 
     render() {
+        if (this.lastRendered === undefined) {
+            this.frame = 0;
+            this.lastRendered = Date.now();
+        }
         this.generateOBJ();
         this.destroyOBJ();
         this.updateOBJ();
@@ -67,18 +79,21 @@ export default class GameRenderer {
         }
         this.camera.update();
         this.app.render();
+
+        if (Date.now() > this.lastRendered + 1000) {
+            this.fps = this.frame;
+            this.frame = 0;
+            this.lastRendered = Date.now();
+        } else {
+            this.frame++;
+        }
     }
 
     generateOBJ() {
         for (let key in this.logic.users) {
             if (!this.objs[key]) {
-                this.objs[key] = new this.PIXI.Container();
-                const graphics = new this.PIXI.Graphics();
-                graphics.beginFill(0x0000FF);
-                graphics.drawRect(0, 0, 50, 50);
-                graphics.endFill();
-                this.objs[key].addChild(graphics);
-                this.playerLayer.addChild(this.objs[key]);
+                this.objs[key] = new UserRenderingObject(this.logic.users[key]);
+                this.playerLayer.addChild(this.objs[key].container);
             }
         }
     }
@@ -95,8 +110,7 @@ export default class GameRenderer {
 
     updateOBJ() {
         for (let key in this.objs) {
-            this.objs[key].x = this.logic.users[key].renderPosition.x;
-            this.objs[key].y = this.logic.users[key].renderPosition.y;
+            this.objs[key].render(this.logic.users[key]);
         }
     }
 

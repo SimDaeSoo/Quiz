@@ -9,7 +9,7 @@ export default class GameRenderer {
         this.app = new PIXI.Application({
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: 0xFFFFFF,
+            backgroundColor: 0x000000,
             autoStart: false,
             antialias: false,
             sharedLoader: true,
@@ -30,6 +30,10 @@ export default class GameRenderer {
 
     render() {
         this.app.render();
+    }
+
+    setLogic(logic) {
+        this.logic = logic;
     }
 
     destroy() {

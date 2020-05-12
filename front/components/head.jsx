@@ -2,8 +2,8 @@ import NextHead from 'next/head';
 import { string } from 'prop-types';
 
 const defaultTitle = 'Quiz';
-const defaultDescription = 'for smart study year-end events page';
-const defaultKeywords = '';
+const defaultDescription = 'Smart Study year-end quiz events page';
+const defaultKeywords = 'SmartStudy, Quiz, YearEnd, Events';
 const defaultOGURL = '';
 const defaultOGImage = '';
 

@@ -1,0 +1,7 @@
+{
+  "routes": [{
+    "method": "GET",
+    "path": "/preview",
+    "handler": "preview.index"
+  }]
+}

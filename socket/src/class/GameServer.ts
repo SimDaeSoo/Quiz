@@ -6,6 +6,8 @@ import * as ip from 'public-ip';
 import { Server } from 'http';
 import { Error } from '../interface/Server';
 import axios, { AxiosResponse } from 'axios';
+import GameRoom from './GameRoom';
+import ClientImportData from '../interface/ClientImportData';
 
 interface Auth {
     jwt: string;
@@ -18,6 +20,8 @@ class GameServer {
     private application!: Express;
     private token: string;
 
+    public rooms: Array<GameRoom> = [];
+
     public async initialize(): Promise<void> {
         this.IP = await ip.v4();
         this.application = express();
@@ -29,7 +33,6 @@ class GameServer {
         this.application.use(bodyParser.json({ limit: '10mb' }));
         this.application.use(bodyParser.urlencoded({ extended: false, limit: '10mb', parameterLimit: 1000000 }));
 
-        // CORS 문제.
         this.application.all('*', (req: Request, res: Response, next: NextFunction) => {
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Content-Type,Content-Length, Authorization, Accept,X-Requested-With');
@@ -67,8 +70,17 @@ class GameServer {
     }
 
     private connect(socket: SocketIO.Socket): void {
-        socket.on('disconnect', (): void => { this.disconnect(socket); });
         socket.on('_ping', (dt): void => { socket.emit('_pong', dt); });
+        socket.on('disconnect', (): void => { this.disconnect(socket); });
+        socket.on('applyCreateRoom', (quizID: string, client: ClientImportData): void => { this.createRoom(socket, quizID, client) });
+        socket.on('getRoom', (): void => { socket.emit('setRoom', this.rooms.map(room => room.export)); });
+        socket.on('cetrification', (token: string): void => { this.certificationUser(socket, token); });
+        socket.on('applyJoinRoom', (client: ClientImportData): void => {
+            if (this.rooms.length) {
+                this.rooms[0].join(socket, client);
+                socket.emit('joinedRoom', this.rooms[0].export);
+            }
+        });
     }
 
     private disconnect(socket: SocketIO.Socket): void {
@@ -88,6 +100,51 @@ class GameServer {
             console.log(`[${new Date}] Certification Error!..`);
         }
     }
+
+    private get uniqueRoomID(): number {
+        let id: number;
+
+        for (let i = 0; i < this.rooms.length; i++) {
+            let flag: boolean = true;
+            for (const room of this.rooms) {
+                if (room.id === i) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                id = i;
+                break;
+            }
+        }
+
+        if (id === undefined) {
+            id = this.rooms.length;
+        }
+
+        return id;
+    }
+
+    private createRoom(socket: SocketIO.Socket, quizID: string, client: ClientImportData): void {
+        const newRoom: GameRoom = new GameRoom(quizID, this.uniqueRoomID);
+        newRoom.setServer(this.io);
+        newRoom.setOwner(client);
+        newRoom.join(socket, client);
+        this.rooms.push(newRoom);
+        socket.emit('joinedRoom', newRoom.export);
+    }
+
+    private certificationUser(socket: SocketIO.Socket, token: string): void {
+        for (const room of this.rooms) {
+            if (room.userDictionary[token]) {
+                room.reConnect(socket, token);
+                socket.emit('joinedRoom', room.export);
+                break;
+            }
+        }
+    }
 }
+
+
 
 export default GameServer;

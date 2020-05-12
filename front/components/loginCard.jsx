@@ -3,7 +3,7 @@ import { UserOutlined } from '@ant-design/icons';
 
 export default class LoginCard extends React.Component {
     render() {
-        const { join, setName, setCharacter, create, token } = this.props;
+        const { join, setName, setCharacter, create, token, connected } = this.props;
         return (
             <Card
                 style={{ margin: 'auto', width: '300px', boxShadow: '0px 6px 6px 0px rgba(0, 0, 0, 0.3)', display: 'inline-block' }}
@@ -14,10 +14,10 @@ export default class LoginCard extends React.Component {
                 />}
                 actions={[
                     <div style={{ textAlign: 'center' }} key='join' onClick={join}>
-                        <Button size="large" type="primary" style={{ width: '100px' }}>Join</Button>
+                        <Button size="large" type="primary" style={{ width: '100px' }} disabled={!connected}>Join</Button>
                     </div>,
                     <div style={{ textAlign: 'center' }} key='create' onClick={create}>
-                        <Button size="large" type="danger" style={{ width: '100px' }}>Create</Button>
+                        <Button size="large" type="danger" style={{ width: '100px' }} disabled={!connected}>Create</Button>
                     </div>
                 ]}
             >
@@ -25,7 +25,7 @@ export default class LoginCard extends React.Component {
                     description={
                         <div>
                             <div style={{ textAlign: 'center' }}>
-                                <Tag color="volcano">Select Your Character</Tag>
+                                <Tag color="volcano">※ Select Your Character ※</Tag>
                             </div>
 
                             <Radio.Group defaultValue="1" style={{ marginTop: '2px' }} onChange={setCharacter} >
@@ -67,12 +67,13 @@ export default class LoginCard extends React.Component {
                         </div>
                     }
                 />
-                <div style={{ position: 'absolute', top: '144px', left: '0' }}>
-                    <Tag color="magenta" style={{ margin: "2px" }}>Smart Study</Tag>
-                    <Tag color="magenta" style={{ margin: "2px" }}>Quiz</Tag>
-                    <Tag color="magenta" style={{ margin: "2px" }}>Game</Tag>
+                <div style={{ position: 'absolute', top: '144px', left: '0', width: '100%', textAlign: 'center' }}>
+                    <Tag color="magenta" style={{ margin: "2px" }}>#SmartStudy</Tag>
+                    <Tag color="magenta" style={{ margin: "2px" }}>#YearEnd</Tag>
+                    <Tag color="magenta" style={{ margin: "2px" }}>#Quiz</Tag>
+                    <Tag color="magenta" style={{ margin: "2px" }}>#Events</Tag>
                 </div>
-                <img style={{ position: 'absolute', top: '10px', left: '5%', width: "90%", backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '10px', paddingTop: '5px', paddingBottom: '5px' }} src="./company_logo.png" />
+                <img style={{ position: 'absolute', top: '5px', left: '5%', width: "90%", backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '10px', paddingTop: '5px', paddingBottom: '5px' }} src="./company_logo.png" />
                 <Tag color="gold" style={{ position: 'absolute', top: '-25px', right: '-2px', height: '20px', fontSize: '0.8em', margin: 0 }}>User Unique ID / {token}</Tag>
             </Card>
         );

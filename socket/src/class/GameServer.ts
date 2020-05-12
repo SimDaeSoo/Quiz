@@ -5,13 +5,18 @@ import * as SocketIO from 'socket.io';
 import * as ip from 'public-ip';
 import { Server } from 'http';
 import { Error } from '../interface/Server';
+import axios, { AxiosResponse } from 'axios';
 
+interface Auth {
+    jwt: string;
+}
 class GameServer {
     private IP!: string;
     private port!: number;
     private server!: Server;
     private io!: SocketIO.Server;
     private application!: Express;
+    private token: string;
 
     public async initialize(): Promise<void> {
         this.IP = await ip.v4();
@@ -63,6 +68,7 @@ class GameServer {
 
     private connect(socket: SocketIO.Socket): void {
         socket.on('disconnect', (): void => { this.disconnect(socket); });
+        socket.on('_ping', (dt): void => { socket.emit('_pong', dt); });
     }
 
     private disconnect(socket: SocketIO.Socket): void {
@@ -70,6 +76,18 @@ class GameServer {
 
     public close(): void {
         this.server.close();
+    }
+
+    public async certification(identifier: string, password: string): Promise<void> {
+        const SERVER_ADDRESS: string = 'http://10.200.20.119';
+        try {
+            const response: AxiosResponse<Auth> = await axios.post(`${SERVER_ADDRESS}/api/auth/local`, { identifier, password });
+            const auth: Auth = response.data;
+            this.token = auth.jwt;
+            console.log(`[${new Date}] Certification Success : ${this.token}`);
+        } catch (e) {
+            console.log(`[${new Date}] Certification Error!..`);
+        }
     }
 }
 

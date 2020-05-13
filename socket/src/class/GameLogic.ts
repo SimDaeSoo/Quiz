@@ -14,6 +14,10 @@ class GameLogic {
         this.updater.on('update', 16, this.update.bind(this));
     }
 
+    public destroy(): void {
+        this.updater.removeAll();
+    }
+
     public update(dt: number): void {
         for (let key in this.users) {
             const user: Client = this.users[key];

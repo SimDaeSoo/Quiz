@@ -1,10 +1,11 @@
-import { Card, Button, Tag, Select } from 'antd';
+import { Card, Button, Tag, Select, Input } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import fetch from 'isomorphic-unfetch';
 
 export default class CreateRoomCard extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { quizzes: [], selectedQuizID: '' };
+        this.state = { quizzes: [], selectedQuizID: '', title: '' };
     }
     componentDidMount() {
         this.fetchData();
@@ -32,12 +33,17 @@ export default class CreateRoomCard extends React.Component {
         }
     }
 
+    setTitle = (e) => {
+        const title = e.target.value;
+        this.setState({ title });
+    }
+
     setQuiz = (selectedQuizID) => {
         this.setState({ selectedQuizID });
     }
 
     render() {
-        const { selectedQuizID } = this.state;
+        const { selectedQuizID, title } = this.state;
         const { token, createRoom } = this.props;
         return (
             <Card
@@ -48,7 +54,7 @@ export default class CreateRoomCard extends React.Component {
                     src="/logo.jpeg"
                 />}
                 actions={[
-                    <div style={{ textAlign: 'center' }} key='create' onClick={() => { createRoom(selectedQuizID); }}>
+                    <div style={{ textAlign: 'center' }} key='create' onClick={() => { createRoom(selectedQuizID, title); }}>
                         <Button size="large" type="danger" style={{ width: '200px' }}>Create</Button>
                     </div>
                 ]}
@@ -59,6 +65,7 @@ export default class CreateRoomCard extends React.Component {
                             <div style={{ textAlign: 'center' }}>
                                 <Tag color="volcano">※ Select Quiz ※</Tag>
                             </div>
+                            <Input placeholder="Insert Room Name" allowClear prefix={<EditOutlined style={{ marginRight: '4px' }} />} style={{ marginTop: '10px' }} onChange={this.setTitle} style={{ marginTop: '4px' }} />
                             <Select style={{ width: '100%', marginTop: '4px' }} onChange={this.setQuiz} placeholder='Select Quiz Process'>
                                 {this.quizElements}
                             </Select>

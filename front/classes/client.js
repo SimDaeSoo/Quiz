@@ -21,12 +21,26 @@ export default class GameClient {
         this.socket.on('joinedRoom', this.joinedRoom.bind(this));
         this.socket.on('setObjectState', this.setObjectState.bind(this));
         this.socket.on('createObject', this.createObject.bind(this));
+        this.socket.on('destroyObject', this.destroyObject.bind(this));
         this.socket.emit('_ping', Date.now());
         return this.socket;
     }
 
     async cetrification() {
-        if (!localStorage.IDENTIFY_TOKEN || localStorage.IDENTIFY_TOKEN === 'undefined') {
+        if (localStorage.IDENTIFY_TOKEN) {
+            const verifying = await fetch(`/api/tokens/${localStorage.IDENTIFY_TOKEN}`, {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const verifiedToken = await verifying.json();
+            if (verifiedToken.error) {
+                localStorage.removeItem('IDENTIFY_TOKEN');
+            }
+        }
+
+        if (!localStorage.IDENTIFY_TOKEN) {
             const response = await fetch(`/api/tokens`, {
                 method: 'post',
                 headers: {
@@ -58,7 +72,9 @@ export default class GameClient {
             this.socket.emit('_ping', Date.now());
         }, 2000);
         this.setState({
-            ping, fps, ups
+            ping,
+            fps,
+            ups
         });
     }
 
@@ -80,10 +96,14 @@ export default class GameClient {
 
     disconnected() {
         this.rendering = false;
-        this.renderer.destroy();
-        this.logic.destroy();
-        this.renderer.fps = 0;
-        this.logic.ups = 0;
+        if (this.renderer) {
+            this.renderer.fps = 0;
+            this.renderer.destroy();
+        }
+        if (this.logic) {
+            this.logic.ups = 0;
+            this.logic.destroy();
+        }
         const mainState = STATE.LOGIN;
         this.setState({
             connected: false,
@@ -101,8 +121,8 @@ export default class GameClient {
         this.renderer = undefined;
     }
 
-    applyCreateRoom(quizID) {
-        this.socket.emit('applyCreateRoom', quizID, {
+    applyCreateRoom(quizID, title) {
+        this.socket.emit('applyCreateRoom', quizID, title, {
             token: this.token,
             name: this.name,
             character: this.character
@@ -151,12 +171,12 @@ export default class GameClient {
         this.logic.start();
     }
 
-    joinRoom() {
+    joinRoom(roomID) {
         this.socket.emit('applyJoinRoom', {
             token: this.token,
             name: this.name,
             character: this.character
-        });
+        }, roomID);
     }
 
     setObjectState(data) {
@@ -168,6 +188,12 @@ export default class GameClient {
     createObject(data) {
         if (this.logic) {
             this.logic.createObject(data);
+        }
+    }
+
+    destroyObject(data) {
+        if (this.logic) {
+            this.logic.destroyObject(data);
         }
     }
 

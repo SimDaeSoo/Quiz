@@ -13,17 +13,19 @@ class Client {
     public vector: { x: number, y: number } = { x: 0, y: 0 };
     public score: number = 0;
     public dirty: boolean = false;
+    public roomID: number;
 
-    constructor(socket: SocketIO.Socket, client: ClientImportData) {
+    constructor(socket: SocketIO.Socket, client: ClientImportData, roomID: number) {
         this.socket = socket;
         this.socket.on('touch', this.touch.bind(this));
         this.token = client.token;
         this.name = client.name;
         this.character = client.character;
+        this.roomID = roomID;
     }
 
     public update(dt: number): void {
-        if (Math.abs(this.targetPosition.x - this.position.x) <= Math.abs(dt * this.vector.x)) {
+        if (Math.abs(this.targetPosition.x - this.position.x) <= Math.abs(dt * this.vector.x) && this.position.x !== this.targetPosition.x) {
             this.position.x = this.targetPosition.x;
             this.vector.x = 0;
             this.dirty = true;
@@ -31,7 +33,7 @@ class Client {
             this.position.x += dt * this.vector.x;
         }
 
-        if (Math.abs(this.targetPosition.y - this.position.y) <= Math.abs(dt * this.vector.y)) {
+        if (Math.abs(this.targetPosition.y - this.position.y) <= Math.abs(dt * this.vector.y) && this.position.y !== this.targetPosition.y) {
             this.position.y = this.targetPosition.y;
             this.vector.y = 0;
             this.dirty = true;
@@ -40,7 +42,7 @@ class Client {
         }
 
         if (this.dirty) {
-            this.server.emit('setObjectState', this.export);
+            this.server.to(`room${this.roomID}`).emit('setObjectState', this.export);
             this.dirty = false;
         }
     }

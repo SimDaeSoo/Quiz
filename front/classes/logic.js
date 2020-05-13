@@ -45,7 +45,11 @@ class Logic {
     }
 
     setState(userData) {
-        this.users[userData.token].setState(userData);
+        if (this.users[userData.token]) {
+            this.users[userData.token].setState(userData);
+        } else {
+            console.log(userData);
+        }
     }
 
     createObject(data) {
@@ -53,6 +57,12 @@ class Logic {
             this.users[data.token] = new User(data);
         } else {
             this.setState(data);
+        }
+    }
+
+    destroyObject(data) {
+        if (this.users[data.token]) {
+            delete this.users[data.token];
         }
     }
 

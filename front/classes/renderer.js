@@ -53,7 +53,9 @@ export default class GameRenderer {
                     y: diffY
                 });
 
-                setTimeout(() => { this.canTouch = true; }, 200);
+                setTimeout(() => {
+                    this.canTouch = true;
+                }, 200);
             }
         });
     }
@@ -101,8 +103,7 @@ export default class GameRenderer {
     destroyOBJ() {
         for (let key in this.objs) {
             if (!this.logic.users[key]) {
-                // 제거 추가한다.
-                console.log('destroy');
+                this.objs[key].container.parent.removeChild(this.objs[key].container);
                 delete this.objs[key];
             }
         }

@@ -41,7 +41,17 @@ class GameServer {
         });
     }
 
-    private routing(): void { }
+    private routing(): void {
+        this.application.get('/rooms', (req, res, next) => {
+            res.json(this.rooms.map((room: GameRoom) => {
+                return {
+                    id: room.id,
+                    title: room.title,
+                    users: Object.keys(room.userDictionary).length
+                }
+            }));
+        });
+    }
 
     public open(port: number): void {
         this.port = port;
@@ -72,18 +82,27 @@ class GameServer {
     private connect(socket: SocketIO.Socket): void {
         socket.on('_ping', (dt): void => { socket.emit('_pong', dt); });
         socket.on('disconnect', (): void => { this.disconnect(socket); });
-        socket.on('applyCreateRoom', (quizID: string, client: ClientImportData): void => { this.createRoom(socket, quizID, client) });
+        socket.on('applyCreateRoom', (quizID: string, title: string, client: ClientImportData): void => { this.createRoom(socket, quizID, title, client) });
         socket.on('getRoom', (): void => { socket.emit('setRoom', this.rooms.map(room => room.export)); });
         socket.on('cetrification', (token: string): void => { this.certificationUser(socket, token); });
-        socket.on('applyJoinRoom', (client: ClientImportData): void => {
-            if (this.rooms.length) {
-                this.rooms[0].join(socket, client);
-                socket.emit('joinedRoom', this.rooms[0].export);
+        socket.on('applyJoinRoom', (client: ClientImportData, roomNumber: number): void => {
+            if (this.rooms[roomNumber]) {
+                this.rooms[roomNumber].join(socket, client);
+                socket.emit('joinedRoom', this.rooms[roomNumber].export);
             }
         });
     }
 
     private disconnect(socket: SocketIO.Socket): void {
+        for (const room of this.rooms) {
+            for (let token in room.userDictionary) {
+                const user = room.userDictionary[token];
+                if (user.socket.id === socket.id) {
+                    room.leave(socket);
+                    break;
+                }
+            }
+        }
     }
 
     public close(): void {
@@ -125,20 +144,26 @@ class GameServer {
         return id;
     }
 
-    private createRoom(socket: SocketIO.Socket, quizID: string, client: ClientImportData): void {
-        const newRoom: GameRoom = new GameRoom(quizID, this.uniqueRoomID);
+    private destroyRoom(room: GameRoom): void {
+        const index = this.rooms.indexOf(room);
+        this.rooms.splice(index);
+    }
+
+    private createRoom(socket: SocketIO.Socket, quizID: string, title: string, client: ClientImportData): void {
+        const newRoom: GameRoom = new GameRoom(quizID, title, this.uniqueRoomID);
         newRoom.setServer(this.io);
         newRoom.setOwner(client);
         newRoom.join(socket, client);
+        newRoom.setDestroy((room: GameRoom): void => { this.destroyRoom(room); });
         this.rooms.push(newRoom);
-        socket.emit('joinedRoom', newRoom.export);
+        socket.emit('joinedRoom', newRoom.export, newRoom.id);
     }
 
     private certificationUser(socket: SocketIO.Socket, token: string): void {
         for (const room of this.rooms) {
             if (room.userDictionary[token]) {
                 room.reConnect(socket, token);
-                socket.emit('joinedRoom', room.export);
+                socket.emit('joinedRoom', room.export, room.id);
                 break;
             }
         }

@@ -38,7 +38,12 @@ export default class UserRenderingObject {
         this.shadow.alpha = 0.5;
 
         this.nametagContainer = new PIXI.Container();
-        this.nametag = new PIXI.Text(data.name, { fontFamily: 'Arial', fontSize: 16, fill: 0xFFFFFF, align: 'center' });
+        this.nametag = new PIXI.Text(data.name, {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: 0xFFFFFF,
+            align: 'center'
+        });
         this.nametag.anchor.x = 0.5;
         this.nametagContainer.y = this.character.y - 20;
 

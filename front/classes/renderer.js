@@ -20,6 +20,7 @@ export default class GameRenderer {
             resizeTo: options.el
         });
 
+        this.background = new PIXI.Container();
         this.stage = new PIXI.Container();
 
         this.groundLayer = new PIXI.Container();
@@ -30,6 +31,7 @@ export default class GameRenderer {
         this.stage.addChild(this.playerLayer);
         this.stage.addChild(this.effectLayer);
 
+        this.app.stage.addChild(this.background);
         this.app.stage.addChild(this.stage);
         this.app.stage.interactive = true;
         options.el.appendChild(this.app.view);
@@ -61,6 +63,11 @@ export default class GameRenderer {
     }
 
     generateMap() {
+
+        const backgroundTexture = PIXI.Texture.from(`/game/background.png`);
+        const backgroundSprite = new PIXI.Sprite(backgroundTexture);
+        this.background.addChild(backgroundSprite);
+
         const texture = PIXI.Texture.from(`/game/map.png`);
         const map = new PIXI.Sprite(texture);
         map.x = -430;
@@ -82,7 +89,10 @@ export default class GameRenderer {
         hogi.scale.x = 0.5;
         hogi.scale.y = 0.5;
         this.groundLayer.addChild(hogi);
-        setTimeout(() => { this.groundLayer.cacheAsBitmap = true; }, 1000);
+        setTimeout(() => {
+            this.background.cacheAsBitmap = true;
+            this.groundLayer.cacheAsBitmap = true;
+        }, 10000);
     }
 
     render() {

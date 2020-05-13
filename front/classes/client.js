@@ -5,6 +5,9 @@ import {
     message
 } from 'antd';
 import Logic from './logic';
+import {
+    ROOM_STATE
+} from '../utils';
 
 const STATE = {
     LOGIN: 1,
@@ -22,6 +25,7 @@ export default class GameClient {
         this.socket.on('setObjectState', this.setObjectState.bind(this));
         this.socket.on('createObject', this.createObject.bind(this));
         this.socket.on('destroyObject', this.destroyObject.bind(this));
+        this.socket.on('setRoomState', this.setRoomState.bind(this));
         this.socket.emit('_ping', Date.now());
         return this.socket;
     }
@@ -147,12 +151,18 @@ export default class GameClient {
 
     joinedRoom(room) {
         this.intialize(room);
-        const isOwner = (room.owner === this.token);
         const mainState = STATE.JOIN_ROOM;
-        this.setState({
-            mainState,
-            isOwner
-        });
+        if (room.owner === this.token) {
+            this.setState({
+                mainState,
+                isOwner: true,
+                ownerCommand: this.ownerCommand
+            });
+        } else {
+            this.setState({
+                mainState
+            });
+        }
         this.renderer = new GameRenderer();
         this.renderer.setLogic(this.logic);
         this.renderer.initialize({
@@ -170,7 +180,12 @@ export default class GameClient {
         render();
     }
 
+    ownerCommand = (data) => {
+        this.socket.emit('ownerCommand', data);
+    }
+
     intialize(room) {
+        this.room = room;
         this.logic = new Logic();
         this.logic.initialize(this.socket, room);
         this.logic.start();
@@ -209,6 +224,20 @@ export default class GameClient {
                 userCount: Object.keys(this.logic.users).length
             });
         }
+    }
+
+    setRoomState(room) {
+        if (this.room && this.room.state !== room.state) {
+            switch (room.state) {
+                case ROOM_STATE.STARTED:
+                    message.success('게임 시작!');
+                    break;
+            }
+        }
+        this.room = room;
+        this.setState({
+            room
+        });
     }
 
     zoomUp() {

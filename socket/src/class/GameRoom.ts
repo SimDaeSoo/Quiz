@@ -7,6 +7,7 @@ import GameLogic from './GameLogic';
 import axios, { AxiosResponse } from 'axios';
 import Quiz from '../interface/Quiz';
 import Command from '../interface/Command';
+import ROOM_STATE from '../interface/RoomState';
 
 class GameRoom {
     public title: string;
@@ -15,10 +16,10 @@ class GameRoom {
     public id: number;
     public owner: string;
     public ownerSocket: SocketIO.Socket;
-    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 2000, ey: 1000 };
+    public state: ROOM_STATE = ROOM_STATE.READY;
+    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 1700, ey: 850 };
     public userDictionary: Dictionary<Client> = {};
     public logic: GameLogic = new GameLogic();
-    public started: boolean = false;
     private authToken: string = '';
     private quiz: Quiz;
 
@@ -37,7 +38,17 @@ class GameRoom {
             owner: this.owner,
             users: this.userExportDatas,
             map: this.map,
-            started: this.started
+            state: this.state
+        };
+    }
+
+    public get simpleExport(): RoomExportData {
+        return {
+            id: this.id,
+            quizID: this.quizID,
+            owner: this.owner,
+            map: this.map,
+            state: this.state
         };
     }
 
@@ -47,15 +58,17 @@ class GameRoom {
 
     public reConnect(socket: SocketIO.Socket, token: string): void {
         socket.join(`room${this.id}`);
-        this.userDictionary[token].reConnect(socket);
         if (token === this.owner) {
             this.ownerSocket = socket;
             socket.on('ownerCommand', this.ownerCommand.bind(this));
+        } else {
+            this.userDictionary[token].reConnect(socket);
         }
+        socket.emit('setRoomState', this.simpleExport);
     }
 
     public join(socket: SocketIO.Socket, client: ClientImportData): void {
-        if (this.started) return;
+        if (this.state !== ROOM_STATE.READY) return;
         socket.join(`room${this.id}`);
         if (client.token !== this.owner) {
             this.userDictionary[client.token] = new Client(socket, client, this.id);
@@ -65,10 +78,11 @@ class GameRoom {
             this.ownerSocket = socket;
             socket.on('ownerCommand', this.ownerCommand.bind(this));
         }
+        socket.emit('setRoomState', this.simpleExport);
     }
 
     public leave(socket: SocketIO.Socket): void {
-        if (this.started) return;
+        if (this.state !== ROOM_STATE.READY) return;
         for (let token in this.userDictionary) {
             const user: Client = this.userDictionary[token];
 
@@ -81,7 +95,7 @@ class GameRoom {
             }
         }
 
-        if (socket.id === this.ownerSocket.id) {
+        if (this.ownerSocket && socket.id === this.ownerSocket.id) {
             this.ownerSocket = undefined;
         }
 
@@ -123,7 +137,12 @@ class GameRoom {
     }
 
     private ownerCommand(command: Command): void {
-        console.log('command emitted', command);
+        switch (command.type) {
+            case 'start':
+                this.state = ROOM_STATE.STARTED;
+                this.server.emit('setRoomState', this.simpleExport);
+                break;
+        }
     }
 }
 
@@ -131,9 +150,9 @@ interface RoomExportData {
     id: number;
     quizID: string;
     owner: string;
-    users: Dictionary<ClientExportData>;
+    users?: Dictionary<ClientExportData>;
     map: { sx: number, sy: number, ex: number, ey: number };
-    started: boolean;
+    state: ROOM_STATE;
 }
 
 export default GameRoom;

@@ -56,11 +56,11 @@ export default class Camera {
         const BOUNDARY = {
             X: {
                 MIN: 50,
-                MAX: -2050
+                MAX: -1750
             },
             Y: {
                 MIN: 50,
-                MAX: -1050
+                MAX: -900
             }
         }
         if (this.position.x >= BOUNDARY.X.MIN * this.currentZoom && this.position.x <= BOUNDARY.X.MAX * this.currentZoom + this.screenWidth) {
@@ -97,7 +97,7 @@ export default class Camera {
                 this.position.x -= 1;
             }
         } else {
-            this.position.x += Math.round((targetPosition.x - this.position.x) * coeifficient);
+            this.position.x += (targetPosition.x - this.position.x) * coeifficient;
         }
 
         if (Math.abs((targetPosition.y - this.position.y) * coeifficient) < 1) {
@@ -109,7 +109,7 @@ export default class Camera {
                 this.position.y -= 1;
             }
         } else {
-            this.position.y += Math.round((targetPosition.y - this.position.y) * coeifficient);
+            this.position.y += (targetPosition.y - this.position.y) * coeifficient;
         }
     }
 

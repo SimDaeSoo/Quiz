@@ -8,6 +8,7 @@ import { Error } from '../interface/Server';
 import axios, { AxiosResponse } from 'axios';
 import GameRoom from './GameRoom';
 import ClientImportData from '../interface/ClientImportData';
+import ROOM_STATE from '../interface/RoomState';
 
 interface Auth {
     jwt: string;
@@ -95,7 +96,7 @@ class GameServer {
 
     private disconnect(socket: SocketIO.Socket): void {
         for (const room of this.rooms) {
-            if (room.ownerSocket.id === socket.id) {
+            if (room.ownerSocket && room.ownerSocket.id === socket.id) {
                 room.leave(socket);
                 break;
             }
@@ -167,7 +168,7 @@ class GameServer {
 
     private certificationUser(socket: SocketIO.Socket, token: string): void {
         for (const room of this.rooms) {
-            if (room.userDictionary[token]) {
+            if (room.userDictionary[token] || (room.owner === token && room.state !== ROOM_STATE.READY)) {
                 room.reConnect(socket, token);
                 socket.emit('joinedRoom', room.export, room.id);
                 break;

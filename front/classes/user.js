@@ -27,8 +27,8 @@ class User {
         } else {
             this.position.y += dt * this.vector.y;
         }
-        this.renderPosition.x += (this.position.x - this.renderPosition.x) * 0.03;
-        this.renderPosition.y += (this.position.y - this.renderPosition.y) * 0.03;
+        this.renderPosition.x += (this.position.x - this.renderPosition.x) * 0.02;
+        this.renderPosition.y += (this.position.y - this.renderPosition.y) * 0.02;
     }
 
     setState(data) {
@@ -39,6 +39,8 @@ class User {
         this.vector = data.vector;
         this.score = data.score;
         this.targetPosition = data.targetPosition;
+        this.renderPosition.x += (this.position.x - this.renderPosition.x) * 0.1;
+        this.renderPosition.y += (this.position.y - this.renderPosition.y) * 0.1;
     }
 }
 

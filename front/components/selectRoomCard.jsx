@@ -54,7 +54,6 @@ export default class SelectRoomCard extends React.Component {
 
     setSelectedRoom = (e) => {
         const selectedRoom = e.target.value;
-        console.log(selectedRoom);
         this.setState({ selectedRoom });
     }
 

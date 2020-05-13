@@ -95,6 +95,10 @@ class GameServer {
 
     private disconnect(socket: SocketIO.Socket): void {
         for (const room of this.rooms) {
+            if (room.ownerSocket.id === socket.id) {
+                room.leave(socket);
+                break;
+            }
             for (let token in room.userDictionary) {
                 const user = room.userDictionary[token];
                 if (user.socket.id === socket.id) {
@@ -151,6 +155,8 @@ class GameServer {
 
     private createRoom(socket: SocketIO.Socket, quizID: string, title: string, client: ClientImportData): void {
         const newRoom: GameRoom = new GameRoom(quizID, title, this.uniqueRoomID);
+        newRoom.setToken(this.token);
+        newRoom.fetchQuiz(quizID);
         newRoom.setServer(this.io);
         newRoom.setOwner(client);
         newRoom.join(socket, client);

@@ -105,11 +105,14 @@ export default class GameClient {
             this.logic.destroy();
         }
         const mainState = STATE.LOGIN;
+        const isOwner = false;
         this.setState({
             connected: false,
             ups: 0,
             fps: 0,
-            mainState
+            userCount: 0,
+            mainState,
+            isOwner
         });
         message.error('Server disconnected');
     }
@@ -144,9 +147,11 @@ export default class GameClient {
 
     joinedRoom(room) {
         this.intialize(room);
+        const isOwner = (room.owner === this.token);
         const mainState = STATE.JOIN_ROOM;
         this.setState({
-            mainState
+            mainState,
+            isOwner
         });
         this.renderer = new GameRenderer();
         this.renderer.setLogic(this.logic);
@@ -169,6 +174,9 @@ export default class GameClient {
         this.logic = new Logic();
         this.logic.initialize(this.socket, room);
         this.logic.start();
+        this.setState({
+            userCount: Object.keys(this.logic.users).length
+        });
     }
 
     joinRoom(roomID) {
@@ -188,12 +196,18 @@ export default class GameClient {
     createObject(data) {
         if (this.logic) {
             this.logic.createObject(data);
+            this.setState({
+                userCount: Object.keys(this.logic.users).length
+            });
         }
     }
 
     destroyObject(data) {
         if (this.logic) {
             this.logic.destroyObject(data);
+            this.setState({
+                userCount: Object.keys(this.logic.users).length
+            });
         }
     }
 

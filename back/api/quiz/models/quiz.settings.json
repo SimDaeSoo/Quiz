@@ -11,8 +11,8 @@
   },
   "attributes": {
     "questions": {
-      "collection": "question",
-      "via": "quiz"
+      "via": "quiz",
+      "collection": "question"
     },
     "title": {
       "type": "string"

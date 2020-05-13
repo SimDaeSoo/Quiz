@@ -4,6 +4,9 @@ import ClientExportData from "../interface/ClientExportData";
 import Client from './Client';
 import * as SocketIO from 'socket.io';
 import GameLogic from './GameLogic';
+import axios, { AxiosResponse } from 'axios';
+import Quiz from '../interface/Quiz';
+import Command from '../interface/Command';
 
 class GameRoom {
     public title: string;
@@ -11,16 +14,18 @@ class GameRoom {
     public quizID: string;
     public id: number;
     public owner: string;
-    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 1500, ey: 750 };
+    public ownerSocket: SocketIO.Socket;
+    public map: { sx: number, sy: number, ex: number, ey: number } = { sx: 0, sy: 0, ex: 2000, ey: 1000 };
     public userDictionary: Dictionary<Client> = {};
     public logic: GameLogic = new GameLogic();
     public started: boolean = false;
+    private authToken: string = '';
+    private quiz: Quiz;
 
     constructor(quizID: string, title: string, id: number) {
         this.quizID = quizID;
         this.id = id;
         this.title = title;
-
         this.logic.setUsers(this.userDictionary);
         this.logic.start();
     }
@@ -31,7 +36,8 @@ class GameRoom {
             quizID: this.quizID,
             owner: this.owner,
             users: this.userExportDatas,
-            map: this.map
+            map: this.map,
+            started: this.started
         };
     }
 
@@ -42,14 +48,23 @@ class GameRoom {
     public reConnect(socket: SocketIO.Socket, token: string): void {
         socket.join(`room${this.id}`);
         this.userDictionary[token].reConnect(socket);
+        if (token === this.owner) {
+            this.ownerSocket = socket;
+            socket.on('ownerCommand', this.ownerCommand.bind(this));
+        }
     }
 
     public join(socket: SocketIO.Socket, client: ClientImportData): void {
         if (this.started) return;
         socket.join(`room${this.id}`);
-        this.userDictionary[client.token] = new Client(socket, client, this.id);
-        this.userDictionary[client.token].server = this.server;
-        this.server.emit('createObject', this.userDictionary[client.token].export);
+        if (client.token !== this.owner) {
+            this.userDictionary[client.token] = new Client(socket, client, this.id);
+            this.userDictionary[client.token].server = this.server;
+            this.server.emit('createObject', this.userDictionary[client.token].export);
+        } else {
+            this.ownerSocket = socket;
+            socket.on('ownerCommand', this.ownerCommand.bind(this));
+        }
     }
 
     public leave(socket: SocketIO.Socket): void {
@@ -66,11 +81,12 @@ class GameRoom {
             }
         }
 
-        let length = 0;
-        for (let key in this.userDictionary) {
-            length++;
+        if (socket.id === this.ownerSocket.id) {
+            this.ownerSocket = undefined;
         }
-        if (!length) {
+
+        const length = Object.keys(this.userDictionary).length;
+        if (!length && !this.ownerSocket) {
             this.logic.destroy();
             this.destroy(this);
         }
@@ -85,6 +101,16 @@ class GameRoom {
         this.owner = client.token;
     }
 
+    public setToken(token: string): void {
+        this.authToken = token;
+    }
+
+    public async fetchQuiz(quizID: string): Promise<void> {
+        const response: AxiosResponse<Quiz> = await axios.get(`${process.env.SERVER_ADDRESS}/api/quizzes/${quizID}`, { headers: { Authorization: `Bearer ${this.authToken}` } });
+        const quiz: Quiz = response.data;
+        this.quiz = quiz;
+    }
+
     public get userExportDatas(): Dictionary<ClientExportData> {
         const result: Dictionary<ClientExportData> = {};
 
@@ -95,6 +121,10 @@ class GameRoom {
 
         return result;
     }
+
+    private ownerCommand(command: Command): void {
+        console.log('command emitted', command);
+    }
 }
 
 interface RoomExportData {
@@ -103,6 +133,7 @@ interface RoomExportData {
     owner: string;
     users: Dictionary<ClientExportData>;
     map: { sx: number, sy: number, ex: number, ey: number };
+    started: boolean;
 }
 
 export default GameRoom;

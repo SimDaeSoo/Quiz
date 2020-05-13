@@ -14,6 +14,7 @@ class Logic {
             const user = room.users[key];
             users[key] = new User(user);
         }
+        this.room = room;
         this.users = users;
         this.map = room.map;
         this.socket = socket;

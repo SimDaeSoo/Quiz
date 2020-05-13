@@ -17,17 +17,14 @@
       "type": "integer",
       "default": 1
     },
-    "answer_list": {
-      "collection": "answer",
-      "via": "questions",
-      "dominant": true
-    },
-    "answer": {
-      "model": "answer"
-    },
     "quiz": {
-      "via": "questions",
-      "model": "quiz"
+      "model": "quiz",
+      "via": "questions"
+    },
+    "Answer": {
+      "type": "boolean",
+      "required": true,
+      "private": false
     }
   }
 }

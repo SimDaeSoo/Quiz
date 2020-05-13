@@ -4,8 +4,9 @@ import GameClient from '../classes/client';
 import LoginCard from '../components/loginCard';
 import CreateRoomCard from '../components/createRoomCard';
 import { message, Button } from 'antd';
-import { ApiOutlined } from '@ant-design/icons';
+import { ApiOutlined, UserOutlined } from '@ant-design/icons';
 import SelectRoomCard from '../components/selectRoomCard';
+import OwnerUI from '../components/ownerUI';
 
 const STATE = {
   LOGIN: 1,
@@ -16,7 +17,7 @@ const STATE = {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN };
+    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0 };
   }
 
   componentDidMount() {
@@ -96,25 +97,36 @@ export default class Home extends React.Component {
     this.client.zoomDown();
   }
 
+  zeroFill(value) {
+    return value.toLocaleString('en', { minimumIntegerDigits: 3, useGrouping: false })
+  }
+
   render() {
     const { SOCKET_ADDRESS } = this.props;
-    const { connected, ping, token, mainState, fps, ups } = this.state;
+    const { connected, ping, token, mainState, fps, ups, isOwner, userCount } = this.state;
     return (
       <div ref='main' className="main">
         <Head />
-        <div style={{ fontSize: '0.7em', zIndex: 1, position: 'fixed', left: '4px', top: connected ? '4px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+        <div style={{ fontSize: '0.7em', zIndex: 2, position: 'fixed', left: '4px', top: connected ? '4px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
           Ping {ping} ms
         </div>
-        <div style={{ fontSize: '0.7em', zIndex: 2, position: 'fixed', left: '4px', top: fps ? '24px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'deepskyblue', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+        <div style={{ fontSize: '0.7em', zIndex: 3, position: 'fixed', left: '4px', top: fps ? '24px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'deepskyblue', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
           {fps} FPS
         </div>
-        <div style={{ fontSize: '0.7em', zIndex: 3, position: 'fixed', left: '4px', top: ups ? '44px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'coral', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
+        <div style={{ fontSize: '0.7em', zIndex: 4, position: 'fixed', left: '4px', top: ups ? '44px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'coral', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'top 0.3s' }}>
           {ups} UPS
         </div>
-        <div style={{ position: 'fixed', zIndex: 4, right: '4px', bottom: '5px', height: '22px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'background-color 0.3s' }}>
+        <div style={{ fontSize: '0.7em', zIndex: 7, position: 'fixed', left: '4px', bottom: userCount ? '4px' : '-30px', height: '16px', borderRadius: '6px', backgroundColor: 'coral', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'bottom 0.3s' }}>
+          <UserOutlined /> {this.zeroFill(userCount)}
+        </div>
+        <div style={{ position: 'fixed', zIndex: 5, right: '4px', bottom: '5px', height: '22px', borderRadius: '6px', backgroundColor: connected ? 'yellowgreen' : '#ff4d4f', color: 'white', textAlign: 'center', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px', paddingLeft: '6px', paddingRight: '6px', transition: 'background-color 0.3s' }}>
           <ApiOutlined /> {connected ? 'Connected' : 'Disconnected'}
         </div>
 
+        {
+          isOwner &&
+          <OwnerUI userCount={userCount} />
+        }
         {
           mainState === STATE.LOGIN &&
           <LoginCard join={this.join} setName={this.setName} setCharacter={this.setCharacter} create={this.create} token={token} connected={connected} />
@@ -129,7 +141,7 @@ export default class Home extends React.Component {
         }
         {
           mainState === STATE.JOIN_ROOM &&
-          <div style={{ position: 'fixed', top: 0, right: 0, zIndex: 5 }}>
+          <div style={{ position: 'fixed', top: 0, right: 0, zIndex: 6 }}>
             <Button type='primary' style={{ margin: '2px' }} onClick={this.zoomUp}>+</Button>
             <Button type='primary' style={{ margin: '2px' }} onClick={this.zoomDown}>-</Button>
           </div>

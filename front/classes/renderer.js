@@ -55,7 +55,7 @@ export default class GameRenderer {
 
                 setTimeout(() => {
                     this.canTouch = true;
-                }, 200);
+                }, 250);
             }
         });
     }
@@ -76,7 +76,7 @@ export default class GameRenderer {
         this.generateOBJ();
         this.destroyOBJ();
         this.updateOBJ();
-        if (this.target && !this.camera.targetObject) {
+        if (this.target && !this.camera.targetObject && this.objs[this.target]) {
             this.camera.setObject(this.objs[this.target]);
         }
         this.camera.update();

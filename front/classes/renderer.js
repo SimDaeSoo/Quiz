@@ -64,7 +64,7 @@ export default class GameRenderer {
 
     generateMap() {
 
-        const backgroundTexture = PIXI.Texture.from(`/game/background.png`);
+        const backgroundTexture = PIXI.Texture.from(`/game/background.jpg`);
         const backgroundSprite = new PIXI.Sprite(backgroundTexture);
         this.background.addChild(backgroundSprite);
 

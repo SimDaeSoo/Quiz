@@ -12,7 +12,7 @@ export default class GameRenderer {
         this.app = new PIXI.Application({
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: 0xFFFFFF,
+            backgroundColor: 0x0066CC,
             autoStart: false,
             antialias: true,
             sharedLoader: true,
@@ -61,11 +61,28 @@ export default class GameRenderer {
     }
 
     generateMap() {
-        const graphics = new PIXI.Graphics();
-        graphics.beginFill(0xDE3249);
-        graphics.drawRect(this.logic.map.sx, this.logic.map.sy, this.logic.map.ex, this.logic.map.ey);
-        graphics.endFill();
-        this.groundLayer.addChild(graphics);
+        const texture = PIXI.Texture.from(`/game/map.png`);
+        const map = new PIXI.Sprite(texture);
+        map.x = -430;
+        map.y = -399;
+        this.groundLayer.addChild(map);
+
+        const pinkfongTexture = PIXI.Texture.from(`/game/PinkFong.png`);
+        const pinkfong = new PIXI.Sprite(pinkfongTexture);
+        pinkfong.x = 520;
+        pinkfong.y = -380;
+        pinkfong.scale.x = 0.5;
+        pinkfong.scale.y = 0.5;
+        this.groundLayer.addChild(pinkfong);
+
+        const hogiTexture = PIXI.Texture.from(`/game/Hogi.png`);
+        const hogi = new PIXI.Sprite(hogiTexture);
+        hogi.x = 830;
+        hogi.y = -405;
+        hogi.scale.x = 0.5;
+        hogi.scale.y = 0.5;
+        this.groundLayer.addChild(hogi);
+        setTimeout(() => { this.groundLayer.cacheAsBitmap = true; }, 1000);
     }
 
     render() {

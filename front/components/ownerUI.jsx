@@ -17,7 +17,7 @@ export default class OwnerUI extends React.Component {
                 }
                 {
                     room && room.state === ROOM_STATE.STARTED &&
-                    <Button onClick={() => { }} style={{ position: 'absolute', left: 'calc(50% - 150px)', top: '62px', width: '300px' }} type='danger'>Next Question</Button>
+                    <Button onClick={() => { }} style={{ position: 'absolute', left: 'calc(50% - 130px)', top: '62px', width: '260px' }} type='danger'>Next Question</Button>
                 }
             </div>
         );

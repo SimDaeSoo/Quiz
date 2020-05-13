@@ -249,10 +249,10 @@ export default class GameClient {
     }
 
     zoomDown() {
-        if (this.renderer.camera.targetZoom >= 0.3) {
+        if (this.renderer.camera.targetZoom >= 0.5) {
             this.renderer.camera.setZoom(this.renderer.camera.targetZoom - 0.1)
         } else {
-            this.renderer.camera.setZoom(0.2);
+            this.renderer.camera.setZoom(0.4);
         }
     }
 }

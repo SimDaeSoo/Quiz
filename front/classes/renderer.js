@@ -71,13 +71,13 @@ export default class GameRenderer {
         const texture = PIXI.Texture.from(`/game/map.png`);
         const map = new PIXI.Sprite(texture);
         map.x = -430;
-        map.y = -399;
+        map.y = -449;
         this.groundLayer.addChild(map);
 
         const pinkfongTexture = PIXI.Texture.from(`/game/PinkFong.png`);
         const pinkfong = new PIXI.Sprite(pinkfongTexture);
         pinkfong.x = 520;
-        pinkfong.y = -380;
+        pinkfong.y = -430;
         pinkfong.scale.x = 0.5;
         pinkfong.scale.y = 0.5;
         this.groundLayer.addChild(pinkfong);
@@ -85,7 +85,7 @@ export default class GameRenderer {
         const hogiTexture = PIXI.Texture.from(`/game/Hogi.png`);
         const hogi = new PIXI.Sprite(hogiTexture);
         hogi.x = 830;
-        hogi.y = -405;
+        hogi.y = -455;
         hogi.scale.x = 0.5;
         hogi.scale.y = 0.5;
         this.groundLayer.addChild(hogi);

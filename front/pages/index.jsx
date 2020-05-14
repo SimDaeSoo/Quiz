@@ -7,6 +7,7 @@ import { message, Button, Progress } from 'antd';
 import { ApiOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import SelectRoomCard from '../components/selectRoomCard';
 import OwnerUI from '../components/ownerUI';
+import UserUI from '../components/rankUI';
 
 const STATE = {
   LOGIN: 1,
@@ -17,7 +18,7 @@ const STATE = {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined };
+    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined, users: [], my: undefined, time: 20 };
   }
 
   componentDidMount() {
@@ -103,7 +104,7 @@ export default class Home extends React.Component {
 
   render() {
     const { SOCKET_ADDRESS } = this.props;
-    const { connected, ping, token, mainState, fps, ups, isOwner, userCount, room, ownerCommand } = this.state;
+    const { connected, ping, token, mainState, fps, ups, isOwner, userCount, room, ownerCommand, users, my, time } = this.state;
     return (
       <div ref='main' className="main">
         <Head />
@@ -125,7 +126,7 @@ export default class Home extends React.Component {
 
         {
           isOwner &&
-          <OwnerUI userCount={userCount} room={room} ownerCommand={ownerCommand} />
+          <OwnerUI users={users} userCount={userCount} room={room} ownerCommand={ownerCommand} />
         }
         {
           mainState === STATE.LOGIN &&
@@ -146,11 +147,15 @@ export default class Home extends React.Component {
             <Button type='primary' style={{ margin: '2px' }} onClick={this.zoomDown}>-</Button>
           </div>
         }
+        {
+          mainState === STATE.JOIN_ROOM &&
+          <UserUI users={users} my={my}></UserUI>
+        }
 
         {
           mainState === STATE.JOIN_ROOM &&
-          <div style={{ position: 'fixed', top: '7px', left: 'calc(50% - 90px)', zIndex: 8, width: '180px' }}>
-            <Progress percent={100} status="active" showInfo={false} />
+          <div style={{ position: 'fixed', top: '90px', left: 'calc(50% - 90px)', zIndex: 8, width: '180px' }}>
+            <Progress percent={time ? time * 5 : 0} strokeColor="#1890ff" status="active" showInfo={false} />
             <div style={{ width: '22px', height: '22px', borderRadius: '11px', paddingLeft: '4px', position: 'absolute', left: 0, backgroundColor: 'lightskyblue', color: 'white', top: '1px', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px' }}>
               <ClockCircleOutlined />
             </div>

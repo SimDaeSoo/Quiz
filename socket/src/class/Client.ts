@@ -3,7 +3,7 @@ import ClientExportData from "../interface/ClientExportData";
 import * as SocketIO from 'socket.io';
 
 class Client {
-    public server: SocketIO.Namespace;
+    public server: SocketIO.Server;
     public socket: SocketIO.Socket;
     public token: string;
     public name: string;
@@ -14,6 +14,7 @@ class Client {
     public score: number = 0;
     public dirty: boolean = false;
     public roomID: number;
+    public boundary: { x: { min: number, max: number }, y: { min: number, max: number } } = { x: { min: 0, max: 1700 }, y: { min: 0, max: 850 } };
 
     constructor(socket: SocketIO.Socket, client: ClientImportData, roomID: number) {
         this.socket = socket;
@@ -41,10 +42,53 @@ class Client {
             this.position.y += dt * this.vector.y;
         }
 
+        this.interpolation();
+
         if (this.dirty) {
             this.server.to(`room${this.roomID}`).emit('setObjectState', this.export);
             this.dirty = false;
         }
+    }
+
+    private interpolation(): void {
+        if (this.position.x < this.boundary.x.min) {
+            this.position.x = this.boundary.x.min;
+            this.vector.x = 0;
+            this.targetPosition.x = this.position.x;
+            this.dirty = true;
+        } else if (this.position.x > this.boundary.x.max) {
+            this.position.x = this.boundary.x.max;
+            this.vector.x = 0;
+            this.targetPosition.x = this.position.x;
+            this.dirty = true;
+        }
+
+        if (this.position.y < this.boundary.y.min) {
+            this.position.y = this.boundary.y.min;
+            this.vector.y = 0;
+            this.targetPosition.y = this.position.y;
+            this.dirty = true;
+        } else if (this.position.y > this.boundary.y.max) {
+            this.position.y = this.boundary.y.max;
+            this.vector.y = 0;
+            this.targetPosition.y = this.position.y;
+            this.dirty = true;
+        }
+    }
+
+    public disablePosition(): void {
+        if (this.position.x > 850) {
+            this.boundary.x.min = 851;
+            this.boundary.x.max = 1700;
+        } else {
+            this.boundary.x.min = 0;
+            this.boundary.x.max = 850;
+        }
+    }
+
+    public enablePosition(): void {
+        this.boundary.x.min = 0;
+        this.boundary.x.max = 1700;
     }
 
     public touch(position: { x: number, y: number }): void {

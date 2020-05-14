@@ -55,12 +55,12 @@ export default class Camera {
     interpolation() {
         const BOUNDARY = {
             X: {
-                MIN: 200,
-                MAX: -1900
+                MIN: 300,
+                MAX: -2000
             },
             Y: {
-                MIN: 200,
-                MAX: -1050
+                MIN: 500,
+                MAX: -1200
             }
         }
         if (this.position.x >= BOUNDARY.X.MIN * this.currentZoom && this.position.x <= BOUNDARY.X.MAX * this.currentZoom + this.screenWidth) {

@@ -26,6 +26,9 @@ export default class GameClient {
         this.socket.on('createObject', this.createObject.bind(this));
         this.socket.on('destroyObject', this.destroyObject.bind(this));
         this.socket.on('setRoomState', this.setRoomState.bind(this));
+        this.socket.on('showQuestion', this.showQuestion.bind(this));
+        this.socket.on('countDown', this.countDown.bind(this));
+        this.socket.on('scoringUser', this.setUserData.bind(this));
         this.socket.emit('_ping', Date.now());
         return this.socket;
     }
@@ -185,8 +188,11 @@ export default class GameClient {
     }
 
     intialize(room) {
+        message.success('OX 퀴즈에 오신것을 환영합니다!.');
         this.room = room;
         this.logic = new Logic();
+        this.logic.setClientState = this.setState;
+        this.logic.token = this.token;
         this.logic.initialize(this.socket, room);
         this.logic.start();
         this.setState({
@@ -227,16 +233,36 @@ export default class GameClient {
     }
 
     setRoomState(room) {
-        if (this.room && this.room.state !== room.state) {
-            switch (room.state) {
-                case ROOM_STATE.STARTED:
-                    message.success('게임 시작!');
-                    break;
-            }
+        if (this.room && this.room.state !== room.state && room.state === ROOM_STATE.END_OF_QUESTION) {
+            setTimeout(() => {
+                message.info('모든 퀴즈가 끝났습니다!. 고생하셨습니다!!.');
+            }, 1000);
         }
         this.room = room;
         this.setState({
             room
+        });
+    }
+
+    showQuestion(question) {
+        message.info({
+            content: `${question.content} (${question.score} 점)`,
+            duration: 8
+        });
+    }
+
+    setUserData(users, answer, explain) {
+        message.info(`정답은 ${answer?'O':'X'} 입니다!. ${explain}`);
+        for (let token in users) {
+            if (this.logic.users[token]) {
+                this.logic.users[token].setState(users[token]);
+            }
+        }
+    }
+
+    countDown(time) {
+        this.setState({
+            time: time
         });
     }
 

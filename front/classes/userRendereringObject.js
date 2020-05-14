@@ -59,6 +59,22 @@ export default class UserRenderingObject {
         this.container.addChild(this.shadow);
         this.container.addChild(this.character);
         this.container.addChild(this.nametagContainer);
+
+
+        const effectImages = [];
+        for (let i = 1; i <= 27; i++) {
+            effectImages.push(`/game/effects/correct/sprite_${i}.png`);
+        }
+        const effectTextures = effectImages.map(image => PIXI.Texture.from(image));
+        this.effectSprite = new PIXI.AnimatedSprite(effectTextures);
+        this.effectSprite.blendMode = PIXI.BLEND_MODES.ADD;
+        this.effectSprite.scale.x = 2;
+        this.effectSprite.scale.y = 2;
+        this.effectSprite.loop = false;
+        this.effectSprite.visible = false;
+        this.effectSprite.animationSpeed = 0.5;
+        this.container.addChild(this.effectSprite);
+        this.lastScore = data.score;
     }
 
     render(data) {
@@ -76,5 +92,13 @@ export default class UserRenderingObject {
         this.character.y = -50 + (-JUMP_HEIGHT * EasingFunctions.easeOutQuad(t));
         this.nametagContainer.y = this.character.y - 22;
         this.container.zIndex = Math.round(this.position.y);
+        this.effectSprite.x = this.character.x - 56;
+        this.effectSprite.y = this.character.y - 34;
+
+        if (this.lastScore !== data.score) {
+            this.lastScore = data.score;
+            this.effectSprite.visible = true;
+            this.effectSprite.gotoAndPlay(1);
+        }
     }
 }

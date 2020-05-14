@@ -24,6 +24,20 @@ class GameLogic {
             user.update(dt);
         }
     }
+
+    public disablePosition(): void {
+        for (let key in this.users) {
+            const user: Client = this.users[key];
+            user.disablePosition();
+        }
+    }
+
+    public enablePosition(): void {
+        for (let key in this.users) {
+            const user: Client = this.users[key];
+            user.enablePosition();
+        }
+    }
 }
 
 export default GameLogic;

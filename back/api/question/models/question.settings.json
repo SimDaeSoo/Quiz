@@ -25,6 +25,9 @@
       "type": "boolean",
       "required": true,
       "private": false
+    },
+    "explain": {
+      "type": "text"
     }
   }
 }

@@ -40,9 +40,31 @@ class Logic {
             this.ups = this.updateCount;
             this.updateCount = 0;
             this.lastUpdated = Date.now();
+            this.setClientState({
+                users: this.getUsers(),
+                my: this.users[this.token]
+            });
         } else {
             this.updateCount++;
         }
+    }
+
+    getUsers() {
+        const users = [];
+        for (let token in this.users) {
+            const user = this.users[token];
+            users.push(user);
+        }
+
+        return users.sort((userA, userB) => {
+            if (userA.score > userB.score) {
+                return -1;
+            } else if (userA.score < userB.score) {
+                return 1;
+            } else if (userA.score === userB.score) {
+                return 0;
+            }
+        });
     }
 
     setState(userData) {

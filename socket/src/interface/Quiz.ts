@@ -7,5 +7,6 @@ export default interface Quiz {
 interface Question {
     score: number;
     content: string;
-    answer: boolean;
+    Answer: boolean;
+    explain: string;
 }

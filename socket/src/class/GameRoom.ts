@@ -11,7 +11,7 @@ import ROOM_STATE from '../interface/RoomState';
 
 class GameRoom {
     public title: string;
-    public server: SocketIO.Namespace;
+    public server: SocketIO.Server;
     public quizID: string;
     public id: number;
     public owner: string;
@@ -22,6 +22,7 @@ class GameRoom {
     public logic: GameLogic = new GameLogic();
     private authToken: string = '';
     private quiz: Quiz;
+    private currentQuizIndex: number = 0;
 
     constructor(quizID: string, title: string, id: number) {
         this.quizID = quizID;
@@ -53,7 +54,7 @@ class GameRoom {
     }
 
     public setServer(server: SocketIO.Server): void {
-        this.server = server.to(`room${this.id}`);
+        this.server = server;
     }
 
     public reConnect(socket: SocketIO.Socket, token: string): void {
@@ -73,7 +74,7 @@ class GameRoom {
         if (client.token !== this.owner) {
             this.userDictionary[client.token] = new Client(socket, client, this.id);
             this.userDictionary[client.token].server = this.server;
-            this.server.emit('createObject', this.userDictionary[client.token].export);
+            this.server.to(`room${this.id}`).emit('createObject', this.userDictionary[client.token].export);
         } else {
             this.ownerSocket = socket;
             socket.on('ownerCommand', this.ownerCommand.bind(this));
@@ -87,15 +88,18 @@ class GameRoom {
             const user: Client = this.userDictionary[token];
 
             if (user.socket.id === socket.id) {
+                socket.disconnect(false);
                 socket.removeAllListeners();
-                socket.emit('disconnect');
-                socket.disconnect(true);
-                this.server.emit('destroyObject', this.userDictionary[token].export);
-                delete this.userDictionary[token];
+                if (this.userDictionary[token]) {
+                    this.server.to(`room${this.id}`).emit('destroyObject', this.userDictionary[token].export);
+                    delete this.userDictionary[token];
+                }
             }
         }
 
         if (this.ownerSocket && socket.id === this.ownerSocket.id) {
+            socket.disconnect(false);
+            socket.removeAllListeners();
             this.ownerSocket = undefined;
         }
 
@@ -136,11 +140,82 @@ class GameRoom {
         return result;
     }
 
+    private nextQuestion(): void {
+        this.logic.enablePosition();
+        setTimeout(() => {
+            const question: any = this.quiz.questions[this.currentQuizIndex];
+            const number: string = this.quiz.questions[this.currentQuizIndex + 1] ? `${this.currentQuizIndex + 1}번` : '마지막';
+            const parsedQuestion: any = {
+                content: `[${number} 문제] ${question.content}`,
+                score: question.score
+            };
+            this.server.to(`room${this.id}`).emit('showQuestion', parsedQuestion);
+            this.timer();
+        }, 500);
+    }
+
+    private timer(): void {
+        let time: number = 20;
+        this.server.to(`room${this.id}`).emit('countDown', 20);
+        const timer: any = () => {
+            setTimeout(() => {
+                if (time > 1) {
+                    time--;
+                    this.server.to(`room${this.id}`).emit('countDown', time);
+                    timer();
+                } else {
+                    this.logic.disablePosition();
+                    this.scoringUser(this.quiz.questions[this.currentQuizIndex].score, this.quiz.questions[this.currentQuizIndex].Answer, this.quiz.questions[this.currentQuizIndex].explain);
+                    if (this.quiz.questions[this.currentQuizIndex + 1]) {
+                        this.currentQuizIndex++;
+                        this.state = ROOM_STATE.READY_NEXT_QUESTION;
+                        this.server.to(`room${this.id}`).emit('setRoomState', this.simpleExport);
+                    } else {
+                        this.state = ROOM_STATE.END_OF_QUESTION;
+                        this.server.to(`room${this.id}`).emit('setRoomState', this.simpleExport);
+                    }
+                }
+            }, 1000);
+        }
+        timer();
+    }
+
+    private scoringUser(score: number, answer: boolean, explain: string): void {
+        const changedUser: Dictionary<ClientExportData> = {};
+        for (let token in this.logic.users) {
+            const user: Client = this.logic.users[token];
+            if (user.position.x <= 850 && answer) {
+                user.score += score;
+                changedUser[user.token] = user.export;
+            } else if (user.position.x >= 851 && !answer) {
+                user.score += score;
+                changedUser[user.token] = user.export;
+            }
+        }
+
+        this.server.to(`room${this.id}`).emit('scoringUser', changedUser, answer, explain);
+    }
+
     private ownerCommand(command: Command): void {
         switch (command.type) {
             case 'start':
                 this.state = ROOM_STATE.STARTED;
-                this.server.emit('setRoomState', this.simpleExport);
+                this.server.to(`room${this.id}`).emit('setRoomState', this.simpleExport);
+                this.nextQuestion();
+                break;
+            case 'next':
+                if (this.state === ROOM_STATE.READY_NEXT_QUESTION) {
+                    this.state = ROOM_STATE.STARTED;
+                    this.server.to(`room${this.id}`).emit('setRoomState', this.simpleExport);
+                    this.nextQuestion();
+                }
+                break;
+            case 'quit':
+                this.state = ROOM_STATE.READY;
+                for (let token in this.userDictionary) {
+                    this.leave(this.userDictionary[token].socket);
+                }
+                this.leave(this.ownerSocket);
                 break;
         }
     }

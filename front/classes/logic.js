@@ -21,7 +21,7 @@ class Logic {
     }
 
     start() {
-        this.updater.on('update', 20, this.update.bind(this));
+        this.updater.on('update', 16, this.update.bind(this));
     }
 
     update(dt) {

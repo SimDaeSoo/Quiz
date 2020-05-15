@@ -48,7 +48,7 @@ class Bot {
                     this.socket.emit('touch', { x: Math.round(Math.random() * 1700), y: Math.round(Math.random() * 850) })
                 }
                 touch();
-            }, 400 + Math.round(Math.random() * 400));
+            }, 500);
         }
         touch();
     }

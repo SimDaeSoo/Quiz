@@ -63,7 +63,7 @@ export default class GameRenderer {
 
                 setTimeout(() => {
                     this.canTouch = true;
-                }, 250);
+                }, 500);
             }
         });
     }

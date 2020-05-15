@@ -10,14 +10,14 @@ class GameLogic {
     public users: Dictionary<Client>;
     public updater: Updater = new Updater();
     private lastLatency: number = 0;
-    private EMIT_LAYENCY: number = 100;
+    private EMIT_LAYENCY: number = 150;
 
     public setUsers(users: Dictionary<Client>): void {
         this.users = users;
     }
 
     public start(): void {
-        this.updater.on('update', 16, this.update.bind(this));
+        this.updater.on('update', 20, this.update.bind(this));
     }
 
     public setServer(server: SocketIO.Server, ID: number): void {

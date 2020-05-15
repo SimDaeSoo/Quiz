@@ -178,9 +178,12 @@ export default class GameClient {
         this.renderer.setTarget(this.token);
 
         this.rendering = true;
+        let lastDT = Date.now();
         const render = () => {
             if (this.rendering) {
+                this.logic.update(Date.now() - lastDT);
                 this.renderer.render();
+                lastDT = Date.now();
                 requestAnimationFrame(render);
             }
         }
@@ -198,7 +201,6 @@ export default class GameClient {
         this.logic.setClientState = this.setState;
         this.logic.token = this.token;
         this.logic.initialize(this.socket, room);
-        this.logic.start();
         this.setState({
             userCount: Object.keys(this.logic.users).length
         });

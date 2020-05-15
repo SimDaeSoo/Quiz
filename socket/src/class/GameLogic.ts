@@ -17,7 +17,7 @@ class GameLogic {
     }
 
     public start(): void {
-        this.updater.on('update', 20, this.update.bind(this));
+        this.updater.on('update', 16.66, this.update.bind(this));
     }
 
     public setServer(server: SocketIO.Server, ID: number): void {

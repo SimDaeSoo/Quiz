@@ -5,7 +5,6 @@ class Logic {
     constructor() {
         this.users = {};
         this.updater = new Updater();
-        this.test = 1;
     }
 
     initialize(socket, room) {
@@ -20,10 +19,6 @@ class Logic {
         this.socket = socket;
     }
 
-    start() {
-        this.updater.on('update', 20, this.update.bind(this));
-    }
-
     update(dt) {
         if (this.lastUpdated === undefined) {
             this.lastUpdated = Date.now();
@@ -33,7 +28,6 @@ class Logic {
         for (let key in this.users) {
             const user = this.users[key];
             user.update(dt);
-            this.test += dt;
         }
 
         if (this.lastUpdated + 1000 <= Date.now()) {

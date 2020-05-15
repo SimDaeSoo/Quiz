@@ -88,7 +88,7 @@ class GameRoom {
             const user: Client = this.userDictionary[token];
 
             if (user.socket.id === socket.id) {
-                socket.disconnect(false);
+                socket.emit('ban');
                 socket.removeAllListeners();
                 if (this.userDictionary[token]) {
                     this.server.to(`room${this.id}`).emit('destroyObject', this.userDictionary[token].export);
@@ -98,7 +98,7 @@ class GameRoom {
         }
 
         if (this.ownerSocket && socket.id === this.ownerSocket.id) {
-            socket.disconnect(false);
+            socket.emit('ban');
             socket.removeAllListeners();
             this.ownerSocket = undefined;
         }
@@ -155,11 +155,11 @@ class GameRoom {
     }
 
     private timer(): void {
-        let time: number = 20;
-        this.server.to(`room${this.id}`).emit('countDown', 20);
+        let time: number = 10;
+        this.server.to(`room${this.id}`).emit('countDown', 10);
         const timer: any = () => {
             setTimeout(() => {
-                if (time > 1) {
+                if (time > 0) {
                     time--;
                     this.server.to(`room${this.id}`).emit('countDown', time);
                     timer();

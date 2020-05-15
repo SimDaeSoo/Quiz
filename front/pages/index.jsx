@@ -18,7 +18,7 @@ const STATE = {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined, users: [], my: undefined, time: 20 };
+    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined, users: [], my: undefined, time: 0 };
   }
 
   componentDidMount() {
@@ -154,8 +154,8 @@ export default class Home extends React.Component {
 
         {
           mainState === STATE.JOIN_ROOM &&
-          <div style={{ position: 'fixed', top: '90px', left: 'calc(50% - 90px)', zIndex: 8, width: '180px' }}>
-            <Progress percent={time ? time * 5 : 0} strokeColor="#1890ff" status="active" showInfo={false} />
+          <div style={{ position: 'fixed', top: '90px', left: 'calc(50% - 90px)', zIndex: 8, width: '180px', opacity: (time && time > 0) ? 1 : 0, transition: '1s opacity' }}>
+            <Progress percent={time ? time * 10 : 0} strokeColor="#1890ff" status="active" showInfo={false} />
             <div style={{ width: '22px', height: '22px', borderRadius: '11px', paddingLeft: '4px', position: 'absolute', left: 0, backgroundColor: 'lightskyblue', color: 'white', top: '1px', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 3px 3px 0px' }}>
               <ClockCircleOutlined />
             </div>

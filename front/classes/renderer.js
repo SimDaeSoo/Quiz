@@ -1,5 +1,8 @@
 import Camera from './camera';
 import UserRenderingObject from './userRendereringObject';
+import {
+    disableBodyScroll
+} from 'body-scroll-lock';
 const PIXI = typeof window !== 'undefined' ? require('pixi.js') : {};
 
 export default class GameRenderer {
@@ -8,6 +11,9 @@ export default class GameRenderer {
 
         // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         // PIXI.settings.ROUND_PIXELS = true;
+
+        const targetElement = document.querySelector('#__next');
+        disableBodyScroll(targetElement);
 
         this.app = new PIXI.Application({
             width: window.innerWidth,

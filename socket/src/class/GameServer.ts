@@ -48,7 +48,8 @@ class GameServer {
                 return {
                     id: room.id,
                     title: room.title,
-                    users: Object.keys(room.userDictionary).length
+                    users: Object.keys(room.userDictionary).length,
+                    state: room.state
                 }
             }));
         });
@@ -87,7 +88,7 @@ class GameServer {
         socket.on('getRoom', (): void => { socket.emit('setRoom', this.rooms.map(room => room.export)); });
         socket.on('cetrification', (token: string): void => { this.certificationUser(socket, token); });
         socket.on('applyJoinRoom', (client: ClientImportData, roomNumber: number): void => {
-            if (this.rooms[roomNumber]) {
+            if (this.rooms[roomNumber] && this.rooms[roomNumber].state === ROOM_STATE.READY) {
                 this.rooms[roomNumber].join(socket, client);
                 socket.emit('joinedRoom', this.rooms[roomNumber].export);
             }

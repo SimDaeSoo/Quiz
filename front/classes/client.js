@@ -18,6 +18,10 @@ const STATE = {
 export default class GameClient {
     connect(url) {
         this.socket = SocketIO(url);
+        this.socket.on('ban', () => {
+            this.socket.close();
+            this.socket.open();
+        });
         this.socket.on('connect', this.connected.bind(this));
         this.socket.on('disconnect', this.disconnected.bind(this));
         this.socket.on('_pong', this.pong.bind(this));

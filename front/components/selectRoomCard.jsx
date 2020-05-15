@@ -1,6 +1,7 @@
 import { Card, Button, Tag, Radio, message } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import fetch from 'isomorphic-unfetch';
+import { ROOM_STATE } from '../utils';
 
 export default class SelectRoomCard extends React.Component {
     constructor(props) {
@@ -34,12 +35,18 @@ export default class SelectRoomCard extends React.Component {
         if (rooms && rooms.length) {
             return rooms.map((room) => {
                 return (
-                    <div key={room.id} style={{ height: '34px' }}>
-                        <Radio.Button value={room.id} style={{ width: '100%', height: '100%', padding: 0 }}>
+                    <div key={room.id} style={{ height: '34px', position: 'relative' }}>
+                        <Radio.Button value={room.id} style={{ width: '100%', height: '100%', padding: 0 }} disabled={room.state !== ROOM_STATE.READY}>
                             <Tag color="red" style={{ marginLeft: '4px', marginRight: '2px' }}>#{this.zeroFill(Number(room.id) + 1)}</Tag>
                             <Tag color="blue"><UserOutlined style={{ marginRight: '4px' }} />{this.zeroFill(room.users)}</Tag>
-                            {room.title.slice(0, 25)}
+                            {room.title.slice(0, 15)}
                         </Radio.Button>
+                        {
+                            room.state !== ROOM_STATE.READY &&
+                            <div style={{ position: 'absolute', top: '6px', right: '6px', color: 'tomato' }}>
+                                <LockOutlined />
+                            </div>
+                        }
                     </div>
                 );
             })

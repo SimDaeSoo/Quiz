@@ -10,7 +10,7 @@ class GameLogic {
     public users: Dictionary<Client>;
     public updater: Updater = new Updater();
     private lastLatency: number = 0;
-    private EMIT_LAYENCY: number = 150;
+    private EMIT_LAYENCY: number = 200;
 
     public setUsers(users: Dictionary<Client>): void {
         this.users = users;

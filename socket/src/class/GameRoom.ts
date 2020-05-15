@@ -55,6 +55,7 @@ class GameRoom {
 
     public setServer(server: SocketIO.Server): void {
         this.server = server;
+        this.logic.setServer(this.server, this.id);
     }
 
     public reConnect(socket: SocketIO.Socket, token: string): void {

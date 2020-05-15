@@ -43,11 +43,6 @@ class Client {
         }
 
         this.interpolation();
-
-        if (this.dirty) {
-            this.server.to(`room${this.roomID}`).emit('setObjectState', this.export);
-            this.dirty = false;
-        }
     }
 
     private interpolation(): void {

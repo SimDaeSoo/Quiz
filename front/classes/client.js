@@ -26,7 +26,7 @@ export default class GameClient {
         this.socket.on('disconnect', this.disconnected.bind(this));
         this.socket.on('_pong', this.pong.bind(this));
         this.socket.on('joinedRoom', this.joinedRoom.bind(this));
-        this.socket.on('setObjectState', this.setObjectState.bind(this));
+        this.socket.on('setAllState', this.setAllState.bind(this));
         this.socket.on('createObject', this.createObject.bind(this));
         this.socket.on('destroyObject', this.destroyObject.bind(this));
         this.socket.on('setRoomState', this.setRoomState.bind(this));
@@ -212,9 +212,9 @@ export default class GameClient {
         }, roomID);
     }
 
-    setObjectState(data) {
+    setAllState(users) {
         if (this.logic) {
-            this.logic.setState(data);
+            this.logic.setAllState(users);
         }
     }
 

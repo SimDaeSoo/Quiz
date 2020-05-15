@@ -67,11 +67,11 @@ class Logic {
         });
     }
 
-    setState(userData) {
-        if (this.users[userData.token]) {
-            this.users[userData.token].setState(userData);
-        } else {
-            console.log(userData);
+    setAllState(users) {
+        for (let token in users) {
+            if (this.users[token]) {
+                this.users[token].setState(users[token]);
+            }
         }
     }
 

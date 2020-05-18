@@ -28,7 +28,7 @@ class Bot {
 
     private async connection(): Promise<void> {
         return new Promise((resolve): void => {
-            this.socket = SocketIO('http://13.209.124.232:3333/');
+            this.socket = SocketIO('http://15.165.206.60:3333/');
             this.socket.on('connect', (): void => {
                 return resolve();
             });
@@ -56,7 +56,7 @@ class Bot {
     private async join(): Promise<void> {
         const tryJoin: any = () => {
             setTimeout(async () => {
-                const response: AxiosResponse = await axios.get(`http://13.209.124.232:3333/rooms`);
+                const response: AxiosResponse = await axios.get(`http://15.165.206.60:3333/rooms`);
                 const rooms: Array<any> = response.data;
                 if (rooms.length >= 1) {
                     const roomIndex: number = Math.round(Math.random() * (rooms.length - 1));

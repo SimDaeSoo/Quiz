@@ -118,12 +118,12 @@ class Client {
             this.name,
             this.character,
             this.score,
-            Number(this.position.x.toFixed(2)),
-            Number(this.position.y.toFixed(2)),
+            Math.round(this.position.x),
+            Math.round(this.position.y),
             Number(this.vector.x.toFixed(2)),
             Number(this.vector.y.toFixed(2)),
-            Number(this.targetPosition.x.toFixed(2)),
-            Number(this.targetPosition.y.toFixed(2))
+            Math.round(this.targetPosition.x),
+            Math.round(this.targetPosition.y)
         ];
     }
 }

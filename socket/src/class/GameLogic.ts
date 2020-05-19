@@ -31,23 +31,15 @@ class GameLogic {
 
     public emitAllUser(): void {
         const users: Dictionary<ClientExportData> = {};
-        for (let token in this.users) {
-            if (this.users[token].dirty) {
-                const user: ClientExportData = this.users[token].export;
-                users[token] = user;
-                this.users[token].dirty = false;
-            }
-        }
+        // for (let token in this.users) {
+        //     if (this.users[token].dirty) {
+        //         const user: ClientExportData = this.users[token].export;
+        //         users[token] = user;
+        //         this.users[token].dirty = false;
+        //     }
+        // }
 
-        let index: number = 0;
-        const length: number = Object.keys(this.users).length;
-        for (let token in this.users) {
-            setTimeout(() => {
-                this.users[token].socket.emit('setAllState', users);
-            }, index / length * 200);
-            index++;
-        }
-        // this.server.to(`room${this.ID}`).emit('setAllState', users);
+        this.server.to(`room${this.ID}`).emit('setAllState', users);
     }
 
     public update(dt: number): void {

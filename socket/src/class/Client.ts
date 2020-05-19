@@ -3,7 +3,6 @@ import ClientExportData from "../interface/ClientExportData";
 import * as SocketIO from 'socket.io';
 
 class Client {
-    public server: SocketIO.Server;
     public socket: SocketIO.Socket;
     public token: string;
     public name: string;

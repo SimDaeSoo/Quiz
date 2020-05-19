@@ -38,7 +38,7 @@ class GameLogic {
                 this.users[token].dirty = false;
             }
         }
-        this.server.to(`room${this.ID}`).emit('setAllState', users);
+        // this.server.to(`room${this.ID}`).emit('setAllState', users);
     }
 
     public update(dt: number): void {

@@ -112,6 +112,20 @@ class Client {
             targetPosition: this.targetPosition
         };
     }
+
+    public get compressionExport(): Array<any> {
+        return [
+            this.name,
+            this.character,
+            this.score,
+            Number(this.position.x.toFixed(2)),
+            Number(this.position.y.toFixed(2)),
+            Number(this.vector.x.toFixed(2)),
+            Number(this.vector.y.toFixed(2)),
+            Number(this.targetPosition.x.toFixed(2)),
+            Number(this.targetPosition.y.toFixed(2))
+        ];
+    }
 }
 
 export default Client;

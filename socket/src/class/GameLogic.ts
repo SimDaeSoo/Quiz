@@ -30,16 +30,15 @@ class GameLogic {
     }
 
     public emitAllUser(): void {
-        const users: Dictionary<ClientExportData> = {};
-        // for (let token in this.users) {
-        //     if (this.users[token].dirty) {
-        //         const user: ClientExportData = this.users[token].export;
-        //         users[token] = user;
-        //         this.users[token].dirty = false;
-        //     }
-        // }
+        const users: Dictionary<Array<string | number>> = {};
+        for (let token in this.users) {
+            if (this.users[token].dirty) {
+                users[token] = this.users[token].compressionExport;
+                this.users[token].dirty = false;
+            }
+        }
 
-        this.server.to(`room${this.ID}`).emit('setAllState', users);
+        this.server.to(`room${this.ID}`).emit('setAllState', JSON.stringify(users));
     }
 
     public update(dt: number): void {

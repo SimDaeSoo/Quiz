@@ -62,9 +62,27 @@ class Logic {
     }
 
     setAllState(users) {
-        for (let token in users) {
+        const userDict = JSON.parse(users);
+        for (let token in userDict) {
             if (this.users[token]) {
-                this.users[token].setState(users[token]);
+                this.users[token].setState({
+                    token: token,
+                    name: userDict[token][0],
+                    character: userDict[token][1],
+                    score: userDict[token][2],
+                    position: {
+                        x: userDict[token][3],
+                        y: userDict[token][4]
+                    },
+                    vector: {
+                        x: userDict[token][5],
+                        y: userDict[token][6]
+                    },
+                    targetPosition: {
+                        x: userDict[token][7],
+                        y: userDict[token][8]
+                    }
+                });
             }
         }
     }

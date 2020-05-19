@@ -38,6 +38,14 @@ class GameLogic {
                 this.users[token].dirty = false;
             }
         }
+
+        let index: number = 0;
+        const length: number = Object.keys(this.users).length;
+        for (let token in this.users) {
+            setTimeout(() => {
+                this.users[token].socket.emit('setAllState', users);
+            }, index / length * 200);
+        }
         // this.server.to(`room${this.ID}`).emit('setAllState', users);
     }
 

@@ -10,7 +10,8 @@ class GameLogic {
     public users: Dictionary<Client>;
     public updater: Updater = new Updater();
     private lastLatency: number = 0;
-    private EMIT_LAYENCY: number = 200;
+    private DEFAULT_EMIT_LAYENCY: number = 100;
+    private CURRENCT_USER_EMIT_LAYENCY: number = 100;
 
     public setUsers(users: Dictionary<Client>): void {
         this.users = users;
@@ -48,7 +49,8 @@ class GameLogic {
         }
 
         this.lastLatency += dt;
-        if (this.lastLatency >= this.EMIT_LAYENCY) {
+        this.CURRENCT_USER_EMIT_LAYENCY = Object.keys(this.users).length;
+        if (this.lastLatency >= this.DEFAULT_EMIT_LAYENCY && this.lastLatency >= this.CURRENCT_USER_EMIT_LAYENCY + 50) {
             this.lastLatency = 0;
             this.emitAllUser();
         }

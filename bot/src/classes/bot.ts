@@ -30,6 +30,9 @@ class Bot {
         return new Promise((resolve): void => {
             this.socket = SocketIO('http://15.165.206.60:3333/');
             this.socket.on('connect', (): void => {
+                setInterval(() => {
+                    this.socket.emit('_ping', Date.now());
+                }, 2000);
                 return resolve();
             });
             this.socket.on('ban', (): void => {

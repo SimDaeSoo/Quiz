@@ -117,7 +117,10 @@ class GameServer {
 
     public async certification(identifier: string, password: string): Promise<void> {
         try {
-            const response: AxiosResponse<Auth> = await axios.post(`${process.env.SERVER_ADDRESS}/api/auth/local`, { identifier, password });
+            const SERVER_ADDRESS: string = process.env.SERVER_ADDRESS ? process.env.SERVER_ADDRESS : 'http://13.209.124.232';
+            const AUTH_IDENTIFIER: string = identifier ? identifier : 'daesoo94';
+            const AUTH_PASSWORD: string = password ? password : 'vndtkstla2';
+            const response: AxiosResponse<Auth> = await axios.post(`${SERVER_ADDRESS}/api/auth/local`, { identifier: AUTH_IDENTIFIER, password: AUTH_PASSWORD });
             const auth: Auth = response.data;
             this.token = auth.jwt;
             console.log(`[${new Date}] Certification Success : ${this.token}`);

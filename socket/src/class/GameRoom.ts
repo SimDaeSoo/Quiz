@@ -74,7 +74,6 @@ class GameRoom {
         socket.join(`room${this.id}`);
         if (client.token !== this.owner) {
             this.userDictionary[client.token] = new Client(socket, client, this.id);
-            this.userDictionary[client.token].server = this.server;
             this.server.to(`room${this.id}`).emit('createObject', this.userDictionary[client.token].export);
         } else {
             this.ownerSocket = socket;

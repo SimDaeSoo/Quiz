@@ -45,6 +45,7 @@ class GameLogic {
             setTimeout(() => {
                 this.users[token].socket.emit('setAllState', users);
             }, index / length * 200);
+            index++;
         }
         // this.server.to(`room${this.ID}`).emit('setAllState', users);
     }

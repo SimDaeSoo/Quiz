@@ -66,6 +66,7 @@ class GameRoom {
         } else {
             this.userDictionary[token].reConnect(socket);
         }
+        socket.on('chat', (text: string): void => { this.chat(token, text); });
         socket.emit('setRoomState', this.simpleExport);
     }
 
@@ -79,7 +80,12 @@ class GameRoom {
             this.ownerSocket = socket;
             socket.on('ownerCommand', this.ownerCommand.bind(this));
         }
+        socket.on('chat', (text: string): void => { this.chat(client.token, text); });
         socket.emit('setRoomState', this.simpleExport);
+    }
+
+    public chat(token: string, text: string) {
+        this.server.to(`room${this.id}`).emit('chat', token, text);
     }
 
     public leave(socket: SocketIO.Socket): void {

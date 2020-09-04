@@ -33,6 +33,7 @@ export default class GameClient {
         this.socket.on('showQuestion', this.showQuestion.bind(this));
         this.socket.on('countDown', this.countDown.bind(this));
         this.socket.on('scoringUser', this.setUserData.bind(this));
+        this.socket.on('chat', this.showChat.bind(this));
         this.socket.emit('_ping', Date.now());
         return this.socket;
     }
@@ -48,6 +49,8 @@ export default class GameClient {
             const verifiedToken = await verifying.json();
             if (verifiedToken.error) {
                 localStorage.removeItem('IDENTIFY_TOKEN');
+            } else {
+                this.character = verifiedToken.character;
             }
         }
 
@@ -61,11 +64,13 @@ export default class GameClient {
             const token = await response.json();
             if (token.id) {
                 localStorage.IDENTIFY_TOKEN = token.id;
+                this.character = token.character;
             }
         }
         this.token = localStorage.IDENTIFY_TOKEN;
         this.setState({
-            token: this.token
+            token: this.token,
+            character: this.character
         });
     }
 
@@ -187,6 +192,7 @@ export default class GameClient {
                 requestAnimationFrame(render);
             }
         }
+
         render();
     }
 
@@ -195,7 +201,7 @@ export default class GameClient {
     }
 
     intialize(room) {
-        message.success('OX 퀴즈에 오신것을 환영합니다!.');
+        message.success('OX 퀴즈에 오신것을 환영합니다!. 엔터키로 채팅을 치실 수 있어요!!.', 5);
         this.room = room;
         this.logic = new Logic();
         this.logic.setClientState = this.setState;
@@ -257,8 +263,16 @@ export default class GameClient {
         });
     }
 
+    showChat(token, text) {
+        if (this.renderer.objs[token]) {
+            this.renderer.objs[token].chat(text);
+        } else {
+            message.info(`[운영자] ${text}`, 5);
+        }
+    }
+
     setUserData(users, answer, explain) {
-        message.info(`정답은 ${answer?'O':'X'} 입니다!. ${explain}`);
+        message.info(`정답은 ${answer ? 'O' : 'X'} 입니다!. ${explain}`);
         for (let token in users) {
             if (this.logic.users[token]) {
                 this.logic.users[token].setState(users[token]);

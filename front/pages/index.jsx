@@ -3,8 +3,8 @@ import Head from '../components/head';
 import GameClient from '../classes/client';
 import LoginCard from '../components/loginCard';
 import CreateRoomCard from '../components/createRoomCard';
-import { message, Button, Progress } from 'antd';
-import { ApiOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { message, Button, Progress, Input } from 'antd';
+import { ApiOutlined, UserOutlined, ClockCircleOutlined, MessageOutlined, SendOutlined } from '@ant-design/icons';
 import SelectRoomCard from '../components/selectRoomCard';
 import OwnerUI from '../components/ownerUI';
 import UserUI from '../components/rankUI';
@@ -18,11 +18,38 @@ const STATE = {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', character: '1', token: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined, users: [], my: undefined, time: 0 };
+    this.state = { name: '', character: '', token: '', chatText: '', connected: false, ping: 0, mainState: STATE.LOGIN, isOwner: false, userCount: 0, room: {}, ownerCommand: undefined, users: [], my: undefined, time: 0, showChat: false };
   }
 
   componentDidMount() {
     this.initialize();
+    window.removeEventListener('keydown', this.keyEvent);
+    window.addEventListener('keydown', this.keyEvent);
+  }
+
+  keyEvent = (e) => {
+    const { keyCode } = e;
+    switch (keyCode) {
+      case 13:
+        this.toggleChatting();
+        break;
+    }
+  }
+
+  toggleChatting = () => {
+    const { showChat, chatText } = this.state;
+    this.setState({ showChat: !showChat });
+
+    if (!showChat) {
+      if (this.chatInput && this.chatInput.focus) {
+        this.chatInput.focus();
+      }
+    } else {
+      if (chatText.length > 0) {
+        this.client.socket.emit('chat', chatText);
+      }
+      this.setState({ chatText: '' });
+    }
   }
 
   async initialize() {
@@ -85,11 +112,6 @@ export default class Home extends React.Component {
     this.setState({ name });
   }
 
-  setCharacter = (e) => {
-    const character = e.target.value;
-    this.setState({ character });
-  }
-
   zoomUp = () => {
     this.client.zoomUp();
   }
@@ -102,9 +124,14 @@ export default class Home extends React.Component {
     return value.toLocaleString('en', { minimumIntegerDigits: 3, useGrouping: false })
   }
 
+  changeChat = (e) => {
+    const chatText = e.target.value;
+    this.setState({ chatText });
+  }
+
   render() {
     const { SOCKET_ADDRESS } = this.props;
-    const { connected, ping, token, mainState, fps, ups, isOwner, userCount, room, ownerCommand, users, my, time } = this.state;
+    const { connected, ping, token, mainState, fps, ups, isOwner, userCount, chatText, room, ownerCommand, users, my, time, character, name, showChat } = this.state;
     return (
       <div ref='main' className="main">
         <Head />
@@ -130,7 +157,7 @@ export default class Home extends React.Component {
         }
         {
           mainState === STATE.LOGIN &&
-          <LoginCard join={this.join} setName={this.setName} setCharacter={this.setCharacter} create={this.create} token={token} connected={connected} />
+          <LoginCard join={this.join} setName={this.setName} create={this.create} token={token} connected={connected} name={name} character={character} />
         }
         {
           mainState === STATE.SELECT_ROOM &&
@@ -150,6 +177,13 @@ export default class Home extends React.Component {
         {
           mainState === STATE.JOIN_ROOM &&
           <UserUI users={users} my={my}></UserUI>
+        }
+
+        {
+          mainState === STATE.JOIN_ROOM && showChat &&
+          <div style={{ width: '100%', position: 'absolute', textAlign: 'right', bottom: '26px' }}>
+            <Input addonAfter={<SendOutlined />} addonBefore={<div>{my ? my.name : ''}<MessageOutlined style={{ marginLeft: '4px' }} /></div>} ref={(input) => { this.chatInput = input; }} style={{ width: 'calc(100% - 240px)', margin: '10px' }} value={chatText} onChange={this.changeChat}></Input>
+          </div>
         }
 
         {

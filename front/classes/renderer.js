@@ -66,6 +66,11 @@ export default class GameRenderer {
                 }, 250);
             }
         });
+
+        const PIXISound = require('pixi-sound');
+        const sound = PIXISound.default.Sound.from('/game/bgm.mp3');
+        sound.volume = 0.1;
+        sound.play({ loop: true, singleInstance: true });
     }
 
     generateMap() {

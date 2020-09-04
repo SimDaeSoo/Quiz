@@ -20,10 +20,13 @@ export default class RankUI extends React.Component {
                     rank++;
                 }
             });
+
+            const isCustomCharacter = Number.isNaN(Number(user.character));
+
             return (
                 <Badge key={index} count={user.score} showZero={true} style={{ fontSize: '0.7em' }} offset={[-6, 6]}>
-                    <div style={{ width: '100px', height: '28px', padding: '2px', borderRadius: '14px', backgroundColor: 'dodgerblue', color: 'white', fontSize: '0.9em', display: 'flex', margin: '4px' }}>
-                        <Avatar src={`/${thumbnail[user.character]}`} size="small" style={{ marginRight: '4px' }} />
+                    <div style={{ width: '200px', height: '28px', padding: '2px', borderRadius: '14px', backgroundColor: 'dodgerblue', color: 'white', fontSize: '0.9em', display: 'flex', margin: '4px' }}>
+                        <Avatar src={isCustomCharacter ? user.character : `/${thumbnail[user.character]}`} size="small" style={{ marginRight: '4px' }} />
                         <div style={{ paddingTop: '7px', textShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.3)' }}>
                             No.{rank} {user.name}
                         </div>
@@ -36,13 +39,16 @@ export default class RankUI extends React.Component {
 
     render() {
         const { my } = this.props;
+
+        const isCustomCharacter = my && Number.isNaN(Number(my.character));
+
         return (
-            <div style={{ position: 'fixed', bottom: '22px', left: 0, width: '110px' }}>
+            <div style={{ position: 'fixed', bottom: '22px', left: 0, width: '210px' }}>
                 {
                     my &&
                     <Badge count={my.score} showZero={true} style={{ fontSize: '0.7em' }} offset={[-6, 6]}>
-                        <div style={{ width: '100px', height: '28px', padding: '2px', borderRadius: '14px', backgroundColor: 'tomato', color: 'white', fontSize: '0.9em', display: 'flex', margin: '4px' }}>
-                            <Avatar src={`/${thumbnail[my.character]}`} size="small" style={{ marginRight: '4px' }} />
+                        <div style={{ width: '200px', height: '28px', padding: '2px', borderRadius: '14px', backgroundColor: 'tomato', color: 'white', fontSize: '0.9em', display: 'flex', margin: '4px' }}>
+                            <Avatar src={isCustomCharacter ? my.character : `/${thumbnail[my.character]}`} size="small" style={{ marginRight: '4px' }} />
                             <div style={{ paddingTop: '7px', textShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.3)' }}>
                                 I'm {my.name}
                             </div>

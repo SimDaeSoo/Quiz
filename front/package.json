@@ -17,6 +17,7 @@
     "body-scroll-lock": "^3.0.2",
     "isomorphic-unfetch": "^3.0.0",
     "next": "^9.3.5",
+    "pixi-sound": "^3.0.5",
     "pixi.js": "^5.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

@@ -4,12 +4,17 @@ services:
   mongo:
     image: mongo
     hostname: mongo
-    environment:
-      MONGO_INITDB_DATABASE: strapi
+    expose:
+      - 27017
     ports:
       - 27017:27017
     volumes:
       - mongodata:/data/db
+      - ./compose/mongo/:/docker-entrypoint-initdb.d/
+    command: "--replSet rs0"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
 
   nginx:
     image: nginx
@@ -32,6 +37,11 @@ services:
       - DATABASE_HOST=mongo
       - DATABASE_PORT=27017
       - DATABASE_NAME=strapi
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=password
+      - DATABASE_SSL=false
+      - DATABASE_AUTHENTICATION_DATABASE=admin
+      - BROWSER_HOST=http://localhost
     depends_on:
       - mongo
     ports:
@@ -47,7 +57,7 @@ services:
     command: sh /start-dev.sh
     environment:
       - NODE_ENV=development
-      - SOCKET_ADDRESS=http://15.165.206.60:3333
+      - SOCKET_ADDRESS=http://218.144.17.243:3333
     ports:
       - 3000:3000
     volumes:

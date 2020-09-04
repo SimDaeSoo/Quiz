@@ -56,9 +56,12 @@ export default class OwnerUI extends React.Component {
                         rank++;
                     }
                 });
+
+                const isCustomCharacter = Number.isNaN(Number(user.character));
+
                 return (
                     <div key={index} style={{ width: 'calc(100% - 4px)', padding: '4px', backgroundColor: 'coral', color: 'white', fontSize: '1em', margin: '2px', display: 'flex' }}>
-                        <Avatar src={`/${thumbnail[user.character]}`} size="small" style={{ marginRight: '4px' }} />
+                        <Avatar src={isCustomCharacter ? user.character : `/${thumbnail[user.character]}`} size="small" style={{ marginRight: '4px' }} />
                         <div style={{ paddingTop: '1px', textShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.3)' }}>
                             No.{rank} {user.name} [{user.score} 점]
                         </div>

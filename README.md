@@ -10,16 +10,12 @@ Default template of creating basic web service
 ## How To Run
 ### Mac OSX & Linux
 ```shell
-# just typping docker-compose up! then service be running
+$ docker-compose up -d mongo
+$ docker-compose exec mongo mongo mongodb://localhost:27017 -u root -p password --eval "rs.initiate()"
+$ docker-compose build
 $ docker-compose up
+$ docker-compose run strapi bash -c "yarn cli setup"
 ```  
-
-### Windows
-```shell
-# please change shell file type 'CRLF' to 'LF'
-# show this - https://blog.thecraftingstrider.net/posts/tech/2019.09/vscode-line-endings-and-bash-script/ 
-$ docker-compose up
-```
 
 ## Development Documents
 - Docker - <https://www.docker.com/>  

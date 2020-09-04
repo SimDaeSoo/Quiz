@@ -20,7 +20,7 @@ class Bot {
     }
 
     private async certification(): Promise<void> {
-        const response: AxiosResponse = await axios.post(`http://13.209.124.232/api/tokens`);
+        const response: AxiosResponse = await axios.post(`http://218.144.17.243/api/tokens`);
         if (response && response.data && response.data.id) {
             this.token = response.data.id;
         }
@@ -28,7 +28,7 @@ class Bot {
 
     private async connection(): Promise<void> {
         return new Promise((resolve): void => {
-            this.socket = SocketIO('http://15.165.206.60:3333/');
+            this.socket = SocketIO('http://218.144.17.243:3333/');
             this.socket.on('connect', (): void => {
                 setInterval(() => {
                     this.socket.emit('_ping', Date.now());
@@ -59,7 +59,7 @@ class Bot {
     private async join(): Promise<void> {
         const tryJoin: any = () => {
             setTimeout(async () => {
-                const response: AxiosResponse = await axios.get(`http://15.165.206.60:3333/rooms`);
+                const response: AxiosResponse = await axios.get(`http://218.144.17.243:3333/rooms`);
                 const rooms: Array<any> = response.data;
                 if (rooms.length >= 1) {
                     const roomIndex: number = Math.round(Math.random() * (rooms.length - 1));

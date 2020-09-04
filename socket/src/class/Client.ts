@@ -13,7 +13,7 @@ class Client {
     public score: number = 0;
     public dirty: boolean = false;
     public roomID: number;
-    public boundary: { x: { min: number, max: number }, y: { min: number, max: number } } = { x: { min: 0, max: 1700 }, y: { min: 0, max: 850 } };
+    public boundary: { x: { min: number, max: number }, y: { min: number, max: number } } = { x: { min: 0, max: 1700 }, y: { min: 0, max: 600 } };
 
     constructor(socket: SocketIO.Socket, client: ClientImportData, roomID: number) {
         this.socket = socket;

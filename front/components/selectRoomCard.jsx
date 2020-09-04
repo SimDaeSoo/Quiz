@@ -108,7 +108,6 @@ export default class SelectRoomCard extends React.Component {
                     />
                     <div style={{ position: 'absolute', top: '144px', left: '0', width: '100%', textAlign: 'center' }}>
                         <Tag color="magenta" style={{ margin: "2px" }}>#SmartStudy</Tag>
-                        <Tag color="magenta" style={{ margin: "2px" }}>#YearEnd</Tag>
                         <Tag color="magenta" style={{ margin: "2px" }}>#Quiz</Tag>
                         <Tag color="magenta" style={{ margin: "2px" }}>#Events</Tag>
                     </div>

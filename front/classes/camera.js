@@ -28,6 +28,7 @@ export default class Camera {
 
     setObject(targetObject) {
         this.targetObject = targetObject;
+        this.targetObject.setTarget();
     }
 
     setZoom(value) {
@@ -60,7 +61,7 @@ export default class Camera {
             },
             Y: {
                 MIN: 500,
-                MAX: -1200
+                MAX: -900
             }
         }
         if (this.position.x >= BOUNDARY.X.MIN * this.currentZoom && this.position.x <= BOUNDARY.X.MAX * this.currentZoom + this.screenWidth) {

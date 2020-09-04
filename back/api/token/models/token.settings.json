@@ -13,6 +13,9 @@
     "created": {
       "type": "boolean",
       "default": true
+    },
+    "character": {
+      "type": "string"
     }
   }
 }

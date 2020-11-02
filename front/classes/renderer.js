@@ -9,8 +9,8 @@ export default class GameRenderer {
     initialize(options) {
         if (this.app) this.destroy();
 
-        // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-        // PIXI.settings.ROUND_PIXELS = true;
+        PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+        PIXI.settings.ROUND_PIXELS = true;
 
         const targetElement = document.querySelector('#__next');
         disableBodyScroll(targetElement);
@@ -20,7 +20,7 @@ export default class GameRenderer {
             height: window.innerHeight,
             backgroundColor: 0x0066CC,
             autoStart: false,
-            antialias: true,
+            antialias: false,
             sharedLoader: true,
             powerPreference: 'high-performance',
             resizeTo: options.el
@@ -63,7 +63,7 @@ export default class GameRenderer {
 
                 setTimeout(() => {
                     this.canTouch = true;
-                }, 250);
+                }, 400);
             }
         });
 
